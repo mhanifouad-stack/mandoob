@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>لوحة تحكم المناديب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#f3f3f0; --surface:#ffffff; --surface2:#eceee9; --ink:#20241f; --muted:#5d665c;
+  --line:#dddcd4; --accent:#7a4416; --accent-ink:#ffffff; --teal:#0e6b5c; --amber:#9a6a00;
+  --danger:#b3261e; --danger-bg:#fbeae8; --ok-bg:#e6f3ee; --chip:#eef0ea;
+  --shadow:0 1px 3px rgba(30,25,15,.08),0 4px 14px rgba(30,25,15,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15171a; --surface:#1f2226; --surface2:#26292e; --ink:#ece9e2; --muted:#a7aca0;
+    --line:#34373c; --accent:#cf9455; --accent-ink:#1d1408; --teal:#4dbfa8; --amber:#e0aa3e;
+    --danger:#f0928a; --danger-bg:#3a2321; --ok-bg:#1e332b; --chip:#2a2e33;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;font-size:16px;line-height:1.55}
+button,[role="button"],select,summary,input:not([type="checkbox"]){min-height:2.25rem}
+input[type="checkbox"]{width:1.15rem;height:1.15rem;accent-color:var(--accent)}
+h1,h2,h3{margin:0;line-height:1.3}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:.45rem 1rem;font-weight:600}
+button:hover{border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn-primary:hover{opacity:.92}
+.btn-ghost{background:transparent}
+.btn-danger{color:var(--danger);border-color:var(--danger)}
+.btn-sm{padding:.2rem .7rem;font-size:.9rem;min-height:2rem}
+input,select,textarea{font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.5rem .7rem;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+label{font-weight:600;font-size:.92rem;display:block;margin-bottom:.3rem}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.hidden{display:none !important}
+
+/* ---------- Login ---------- */
+.login-wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:1.2rem}
+.login-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);max-width:520px;width:100%;padding:1.8rem 1.6rem}
+.login-card h1{font-size:1.55rem;margin-bottom:.3rem}
+.login-card .sub{color:var(--muted);margin-bottom:1.4rem}
+.field{margin-bottom:1.05rem}
+.field .hint{font-size:.85rem;color:var(--muted);margin-top:.35rem}
+.login-err{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger);border-radius:8px;padding:.6rem .8rem;margin-bottom:1rem;font-weight:600}
+.login-ok{background:var(--ok-bg);color:var(--teal);border-radius:8px;padding:.6rem .8rem;margin-bottom:1rem;font-weight:600}
+.steps{background:var(--surface2);border-radius:10px;padding:.9rem 1rem;margin-top:1.3rem;font-size:.92rem}
+.steps ol{margin:.4rem 0 0;padding-inline-start:1.3rem}
+.steps li{margin:.25rem 0}
+code{direction:ltr;unicode-bidi:embed;background:var(--chip);padding:.05rem .4rem;border-radius:5px;font-size:.88em}
+
+/* ---------- App shell ---------- */
+.topbar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.topbar .brand{font-weight:700;font-size:1.15rem}
+.topbar .spacer{flex:1}
+.conn{display:inline-flex;align-items:center;gap:.4rem;background:var(--chip);border-radius:999px;padding:.25rem .8rem;font-size:.85rem;font-weight:600}
+.conn .dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--teal)}
+.conn.demo .dot{background:var(--amber)}
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.45rem}
+nav.tabs button{border-radius:999px;padding:.35rem 1rem;font-size:.95rem}
+nav.tabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+main{max-width:1180px;margin:0 auto;padding:1.1rem 1rem 3rem}
+section.page{display:none}
+section.page.active{display:block}
+.sec-head{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem}
+.sec-head h2{font-size:1.3rem}
+.sec-head .spacer{flex:1}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-bottom:1.1rem}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;box-shadow:var(--shadow)}
+.stat .num{font-size:1.65rem;font-weight:700;line-height:1.2}
+.stat .lbl{color:var(--muted);font-size:.9rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:1rem;margin-bottom:1.1rem}
+.panel h3{font-size:1.08rem;margin-bottom:.7rem}
+
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:.55rem .6rem;text-align:right;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{color:var(--muted);font-size:.85rem;font-weight:600;background:var(--surface2)}
+tbody tr:last-child td{border-bottom:none}
+.tbl-wrap{overflow-x:auto}
+.num-cell{font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:.1rem .65rem;font-size:.83rem;font-weight:600;white-space:nowrap}
+.chip.order{color:var(--teal)}
+.chip.closed{color:var(--danger)}
+.chip.hidden-chip{color:var(--amber)}
+.progress{height:.55rem;background:var(--surface2);border-radius:99px;overflow:hidden;min-width:90px}
+.progress>i{display:block;height:100%;background:var(--teal);border-radius:99px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem}
+.form-grid .full{grid-column:1/-1}
+.form-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.9rem}
+.switch-row{display:flex;align-items:center;gap:.6rem;padding:.4rem 0}
+.switch-row label{margin:0}
+.toast{position:fixed;bottom:1.1rem;inset-inline-start:50%;transform:translateX(50%);background:var(--ink);color:var(--bg);padding:.7rem 1.2rem;border-radius:10px;font-weight:600;z-index:99;box-shadow:var(--shadow);max-width:92vw;text-align:center}
+.toast.err{background:var(--danger);color:#fff}
+.empty{padding:1.4rem;text-align:center;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1rem;align-items:end}
+.filters .f{min-width:160px;flex:0 1 auto}
+.debt{color:var(--danger);font-weight:700}
+
+/* ---------- Print (daily sheet) ---------- */
+#printView{display:none}
+@media print{
+  body>*{display:none !important}
+  body>#printView{display:block !important}
+  #printView{color:#000;background:#fff;font-size:13px}
+  #printView table th,#printView table td{border:1px solid #999}
+  #printView thead th{background:#eee;color:#000}
+}
+#printView{direction:rtl;padding:1rem}
+#printView h1{font-size:20px;margin-bottom:2px}
+#printView h2{font-size:16px;margin:14px 0 6px}
+#printView table{width:100%;border-collapse:collapse}
+#printView th,#printView td{padding:5px 7px;text-align:right}
+@media (max-width:640px){
+  .login-card{padding:1.3rem 1.1rem}
+  main{padding:.9rem .7rem 2.5rem}
+  th,td{padding:.5rem .45rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <h1>لوحة تحكم المناديب</h1>
+    <p class="sub">دخول المدير — اللوحة دي بتاعتك انت بس، ما تبعتهاش لأي مندوب.</p>
+
+    <div class="login-err hidden" id="loginErr" role="alert"></div>
+    <div class="login-ok hidden" id="loginOk"></div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label for="scriptUrl">رابط الربط (Google Apps Script Web App URL)</label>
+        <input id="scriptUrl" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/…/exec" />
+        <p class="hint">بيتلصق مرة واحدة هنا وبيتخزن على الجهاز ده، ومش هتحتاج تلصقه تاني.</p>
+      </div>
+      <div class="field">
+        <label for="adminCode">كود المدير</label>
+        <input id="adminCode" type="password" inputmode="numeric" placeholder="اكتب كود المدير" />
+      </div>
+      <button type="submit" class="btn-primary" id="loginBtn" style="width:100%">دخول اللوحة</button>
+    </form>
+
+    <div class="steps">
+      <strong>الرابط ده بييجي منين؟</strong>
+      <ol>
+        <li>افتح ملف الشيت الموحد على جوجل درايف.</li>
+        <li>من قائمة <strong>Extensions</strong> اختار <strong>Apps Script</strong> والصق ملف كود المندوب (<code>Code</code>) لو مش متلصق.</li>
+        <li>دوس <strong>Deploy ← New deployment ← Web app</strong> وانسخ الرابط اللي بيخلص بـ <code>/exec</code> والصقه هنا.</li>
+      </ol>
+      <p class="small muted" style="margin:.6rem 0 0">من غير رابط، اللوحة بتفتح بوضع المعاينة بالبيانات المرجعية المعتمدة وكود المدير التجريبي <strong>9999</strong> — من غير أي بيانات تشغيل حقيقية.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appView" class="hidden">
+  <div class="topbar">
+    <span class="brand">لوحة تحكم المناديب</span>
+    <span class="conn" id="connBadge"><span class="dot"></span><span id="connText">متصل بالشيت</span></span>
+    <span class="spacer"></span>
+    <button id="refreshBtn" type="button">تحديث البيانات</button>
+    <button id="logoutBtn" type="button" class="btn-ghost">خروج</button>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button type="button" data-page="overview" class="active">نظرة عامة</button>
+    <button type="button" data-page="reps">المناديب</button>
+    <button type="button" data-page="products">الأصناف</button>
+    <button type="button" data-page="categories">التصنيفات</button>
+    <button type="button" data-page="shops">المحلات</button>
+    <button type="button" data-page="visits">الزيارات</button>
+    <button type="button" data-page="expenses">المصروفات</button>
+    <button type="button" data-page="daily">يومية مندوب</button>
+    <button type="button" data-page="settings">الإعدادات</button>
+  </nav>
+
+  <main>
+    <!-- Overview -->
+    <section class="page active" id="page-overview">
+      <div class="sec-head"><h2>نشاط النهاردة — <span id="todayLabel"></span></h2></div>
+      <div class="cards" id="todayCards"></div>
+      <div class="panel">
+        <h3>تارجت المناديب — مبيعات الشهر الحالي</h3>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>المندوب</th><th>المنطقة</th><th>مبيعات الشهر</th><th>التارجت</th><th>النسبة</th><th style="min-width:130px">التقدم</th></tr></thead>
+          <tbody id="targetBody"></tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <h3>أحدث النشاطات</h3>
+        <div id="recentList"></div>
+      </div>
+      <div class="panel">
+        <h3>محلات عليها مديونية</h3>
+        <div id="debtList"></div>
+      </div>
+    </section>
+
+    <!-- Reps -->
+    <section class="page" id="page-reps">
+      <div class="sec-head"><h2>المناديب</h2><span class="spacer"></span><button type="button" class="btn-primary" id="newRepBtn">+ إضافة مندوب</button></div>
+      <div class="panel hidden" id="repFormPanel">
+        <h3 id="repFormTitle">إضافة مندوب</h3>
+        <form id="repForm">
+          <input type="hidden" id="repId" />
+          <div class="form-grid">
+            <div><label for="repName">اسم المندوب</label><input id="repName" required /></div>
+            <div><label for="repCode">كود الدخول (٤ أرقام)</label><input id="repCode" required inputmode="numeric" dir="ltr" /></div>
+            <div><label for="repArea">المنطقة</label><input id="repArea" placeholder="مدينة نصر" /></div>
+            <div><label for="repLine">خط السير</label><input id="repLine" placeholder="خط مدينة نصر والمقطم" /></div>
+            <div><label for="repVehicle">العربية</label><input id="repVehicle" placeholder="رقم / وصف العربية" /></div>
+            <div><label for="repTarget">التارجت الشهري (ج.م)</label><input id="repTarget" type="number" min="0" step="any" dir="ltr" /></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">حفظ المندوب</button>
+            <button type="button" id="repCancel">إلغاء</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>المندوب</th><th>الكود</th><th>المنطقة</th><th>خط السير</th><th>العربية</th><th>التارجت الشهري</th><th></th></tr></thead>
+        <tbody id="repsBody"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- Products -->
+    <section class="page" id="page-products">
+      <div class="sec-head"><h2>أصناف القهوة</h2><span class="spacer"></span><button type="button" class="btn-primary" id="newProductBtn">+ إضافة صنف</button></div>
+      <p class="muted small" style="margin-top:-.5rem">الأصناف المخفية موجودة عندك هنا بس، والمندوب ما بيشوفهاش في تطبيقه.</p>
+      <div class="panel hidden" id="productFormPanel">
+        <h3 id="productFormTitle">إضافة صنف</h3>
+        <form id="productForm">
+          <input type="hidden" id="productId" />
+          <div class="form-grid">
+            <div><label for="productName">اسم الصنف</label><input id="productName" required /></div>
+            <div><label for="productCategory">التصنيف</label><select id="productCategory"></select></div>
+            <div><label for="productSize">الحجم / العبوة</label><input id="productSize" placeholder="250 جم" /></div>
+            <div><label for="productPrice">سعر الجملة للمحل (ج.م)</label><input id="productPrice" type="number" min="0" step="any" required dir="ltr" /></div>
+          </div>
+          <div class="switch-row"><input type="checkbox" id="productVisible" checked /><label for="productVisible">إظهار للمندوب في تطبيقه</label></div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">حفظ الصنف</button>
+            <button type="button" id="productCancel">إلغاء</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>الصنف</th><th>التصنيف</th><th>الحجم</th><th>السعر</th><th>ظاهر للمندوب؟</th><th></th></tr></thead>
+        <tbody id="productsBody"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- Categories -->
+    <section class="page" id="page-categories">
+      <div class="sec-head"><h2>التصنيفات</h2><span class="spacer"></span><button type="button" class="btn-primary" id="newCategoryBtn">+ إضافة تصنيف</button></div>
+      <p class="muted small" style="margin-top:-.5rem">ضيف أي تصنيف جديد — مصروفات (عطل عربية، بنزين…) أو أصناف — وفعّل «إظهار للمندوب» عشان يظهر عنده على طول، من غير أي برمجة.</p>
+      <div class="panel hidden" id="categoryFormPanel">
+        <h3 id="categoryFormTitle">إضافة تصنيف</h3>
+        <form id="categoryForm">
+          <input type="hidden" id="categoryId" />
+          <div class="form-grid">
+            <div><label for="categoryName">اسم التصنيف</label><input id="categoryName" required /></div>
+            <div><label for="categoryScope">نوع التصنيف</label>
+              <select id="categoryScope">
+                <option value="expense">مصروفات</option>
+                <option value="product">أصناف</option>
+                <option value="general">عام</option>
+              </select></div>
+          </div>
+          <div class="switch-row"><input type="checkbox" id="categoryVisible" checked /><label for="categoryVisible">إظهار للمندوب</label></div>
+          <div class="switch-row"><input type="checkbox" id="categoryVehicle" /><label for="categoryVehicle">تصنيف خاص بالعربية (عطل / صيانة / وقود…)</label></div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">حفظ التصنيف</button>
+            <button type="button" id="categoryCancel">إلغاء</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>التصنيف</th><th>النوع</th><th>خاص بالعربية؟</th><th>ظاهر للمندوب؟</th><th></th></tr></thead>
+        <tbody id="categoriesBody"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- Shops -->
+    <section class="page" id="page-shops">
+      <div class="sec-head"><h2>المحلات وكشوف الحسابات</h2></div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>المحل</th><th>المنطقة</th><th>المندوب المسؤول</th><th>إجمالي الطلبات</th><th>المحصّل</th><th>الرصيد المستحق</th></tr></thead>
+        <tbody id="shopsBody"></tbody>
+      </table></div>
+      <p class="small muted">الرصيد بيتحسب من الزيارات المسجلة: مجموع الآجل (قيمة الطلب − المحصّل) لكل محل.</p></div>
+    </section>
+
+    <!-- Visits -->
+    <section class="page" id="page-visits">
+      <div class="sec-head"><h2>الزيارات</h2></div>
+      <div class="filters">
+        <div class="f"><label for="visitRepFilter">المندوب</label><select id="visitRepFilter"><option value="">كل المناديب</option></select></div>
+        <div class="f"><label for="visitDateFilter">اليوم</label><input type="date" id="visitDateFilter" dir="ltr" /></div>
+        <button type="button" id="visitClearFilter">كل الأيام</button>
+      </div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>التاريخ والوقت</th><th>المندوب</th><th>المحل</th><th>النتيجة</th><th>قيمة الطلب</th><th>المحصّل</th><th>الآجل</th><th>ملحوظات</th></tr></thead>
+        <tbody id="visitsBody"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- Expenses -->
+    <section class="page" id="page-expenses">
+      <div class="sec-head"><h2>المصروفات اليومية</h2></div>
+      <div class="cards" id="expenseCards"></div>
+      <div class="filters">
+        <div class="f"><label for="expRepFilter">المندوب</label><select id="expRepFilter"><option value="">كل المناديب</option></select></div>
+        <div class="f"><label for="expDateFilter">اليوم</label><input type="date" id="expDateFilter" dir="ltr" /></div>
+        <button type="button" id="expClearFilter">كل الأيام</button>
+      </div>
+      <div class="panel"><div class="tbl-wrap"><table>
+        <thead><tr><th>التاريخ والوقت</th><th>المندوب</th><th>التصنيف</th><th>المبلغ</th><th>ملحوظة</th></tr></thead>
+        <tbody id="expensesBody"></tbody>
+      </table></div></div>
+    </section>
+
+    <!-- Daily sheet -->
+    <section class="page" id="page-daily">
+      <div class="sec-head"><h2>يومية مندوب</h2></div>
+      <div class="panel">
+        <div class="filters" style="margin-bottom:0">
+          <div class="f"><label for="dailyRep">المندوب</label><select id="dailyRep"></select></div>
+          <div class="f"><label for="dailyDate">اليوم</label><input type="date" id="dailyDate" dir="ltr" /></div>
+          <button type="button" class="btn-primary" id="dailyShow">عرض اليومية</button>
+          <button type="button" id="dailyPrint">طباعة</button>
+          <button type="button" id="dailyXlsx">تصدير Excel</button>
+          <button type="button" id="dailyCsv">تصدير CSV</button>
+        </div>
+      </div>
+      <div id="dailyResult"></div>
+    </section>
+
+    <!-- Settings -->
+    <section class="page" id="page-settings">
+      <div class="sec-head"><h2>الإعدادات</h2></div>
+      <div class="panel">
+        <h3>رابط الربط مع الشيت</h3>
+        <form id="urlForm">
+          <div class="field">
+            <label for="settingsUrl">رابط Google Apps Script (Web App URL)</label>
+            <input id="settingsUrl" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/…/exec" />
+            <p class="hint small muted">بيتخزن على الجهاز ده بس. لو غيّرته، اللوحة هتتصل بالشيت الجديد من أول دخلة جاية.</p>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">حفظ الرابط</button>
+            <button type="button" id="clearUrlBtn" class="btn-danger">مسح الرابط من الجهاز</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>حالة الاتصال</h3>
+        <p id="settingsStatus" class="small"></p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Print-only daily sheet -->
+<div id="printView"></div>
+
+<div class="toast hidden" id="toast" role="status"></div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+"use strict";
+/* ================= Seed reference data (approved) ================= */
+var SEED = {
+  reps: [
+    {id:"rep1", code:"1234", name:"أحمد سامي", area:"مدينة نصر", line:"خط مدينة نصر", vehicle:"", target:15000},
+    {id:"rep2", code:"2345", name:"كريم حسن", area:"مصر الجديدة", line:"خط مصر الجديدة", vehicle:"", target:12000},
+    {id:"rep3", code:"3456", name:"عمر فاروق", area:"المعادي", line:"خط المعادي", vehicle:"", target:12000},
+    {id:"rep4", code:"4567", name:"سامح إبراهيم", area:"شبرا", line:"خط شبرا", vehicle:"", target:10000}
+  ],
+  products: [
+    {id:"p1", name:"بن سادة فاتح", category:"بن سادة", size:"250 جم", price:95, visible:true},
+    {id:"p2", name:"بن سادة غامق", category:"بن سادة", size:"250 جم", price:95, visible:true},
+    {id:"p3", name:"بن محوج فاتح", category:"بن محوج", size:"250 جم", price:110, visible:true},
+    {id:"p4", name:"بن محوج غامق", category:"بن محوج", size:"250 جم", price:110, visible:true},
+    {id:"p5", name:"بن محوج خاص", category:"بن محوج", size:"250 جم", price:125, visible:true},
+    {id:"p6", name:"توليفة البيت الخاصة", category:"توليفات", size:"500 جم", price:210, visible:true},
+    {id:"p7", name:"اسبريسو مطحون", category:"اسبريسو", size:"250 جم", price:140, visible:true},
+    {id:"p8", name:"بن عربي أصيل", category:"قهوة مختصة", size:"250 جم", price:135, visible:true},
+    {id:"p9", name:"بن سادة — عبوة اقتصادية", category:"عبوات كبيرة", size:"1 كجم", price:360, visible:true},
+    {id:"p10", name:"بن محوج — عبوة اقتصادية", category:"عبوات كبيرة", size:"1 كجم", price:420, visible:true},
+    {id:"p11", name:"بن تركي سريع التحضير", category:"بن سادة", size:"125 جم", price:55, visible:true},
+    {id:"p12", name:"حبوب قهوة مختصة كاملة", category:"قهوة مختصة", size:"500 جم", price:260, visible:true}
+  ],
+  categories: [
+    {id:"c1", name:"بن سادة", scope:"product", visible:true, isVehicle:false},
+    {id:"c2", name:"بن محوج", scope:"product", visible:true, isVehicle:false},
+    {id:"c3", name:"توليفات", scope:"product", visible:true, isVehicle:false},
+    {id:"c4", name:"اسبريسو", scope:"product", visible:true, isVehicle:false},
+    {id:"c5", name:"عبوات كبيرة", scope:"product", visible:true, isVehicle:false},
+    {id:"c6", name:"قهوة مختصة", scope:"product", visible:true, isVehicle:false},
+    {id:"c7", name:"عطل وصيانة عربية", scope:"expense", visible:true, isVehicle:true},
+    {id:"c8", name:"وقود — بنزين / سولار", scope:"expense", visible:true, isVehicle:true},
+    {id:"c9", name:"كاوتش / بطارية", scope:"expense", visible:true, isVehicle:true},
+    {id:"c10", name:"زيت وفلاتر", scope:"expense", visible:true, isVehicle:true},
+    {id:"c11", name:"نقل بديل / مواصلات", scope:"expense", visible:true, isVehicle:true},
+    {id:"c12", name:"مصروف آخر", scope:"expense", visible:true, isVehicle:false},
+    {id:"c13", name:"عام", scope:"general", visible:true, isVehicle:false},
+    {id:"c14", name:"أصناف تحت المراجعة", scope:"product", visible:false, isVehicle:false}
+  ],
+  shops: [
+    {id:"s1", name:"سوبر ماركت النور", area:"مدينة نصر", repId:"rep1"},
+    {id:"s2", name:"كافيه الحارة", area:"مدينة نصر", repId:"rep1"},
+    {id:"s3", name:"محل بن العمدة", area:"مدينة نصر", repId:"rep1"},
+    {id:"s4", name:"سوبر ماركت الأسرة", area:"مصر الجديدة", repId:"rep2"},
+    {id:"s5", name:"كافيه روف", area:"مصر الجديدة", repId:"rep2"},
+    {id:"s6", name:"محل الحلواني الشرقي", area:"مصر الجديدة", repId:"rep2"},
+    {id:"s7", name:"سوبر ماركت المعادي بلازا", area:"المعادي", repId:"rep3"},
+    {id:"s8", name:"كافيه النيل", area:"المعادي", repId:"rep3"},
+    {id:"s9", name:"بقالة التوفير", area:"المعادي", repId:"rep3"},
+    {id:"s10", name:"سوبر ماركت شبرا المركزي", area:"شبرا", repId:"rep4"},
+    {id:"s11", name:"كافيه ليالي شبرا", area:"شبرا", repId:"rep4"},
+    {id:"s12", name:"محل بن الشام", area:"شبرا", repId:"rep4"}
+  ],
+  visits: [],
+  expenses: []
+};
+var DEMO_ADMIN_CODE = "9999";
+var URL_KEY = "repsDashboard_scriptUrl";
+var CODE_KEY = "repsDashboard_adminCode";
+/* رابط الربط الافتراضي المدمج — بيُستخدم تلقائيًا لو مفيش رابط محفوظ على الجهاز، وأي رابط محفوظ يدويًا له الأولوية */
+var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzQkHQt7P-60wPv1zZGRMZzMxmnxrNcwqbQR35Br0gYak4NDPgSJNIKOMvoNMmvMFVO/exec";
+
+var state = {reps:[], products:[], categories:[], shops:[], visits:[], expenses:[]};
+var connected = false;       // true when talking to the Apps Script backend
+var adminCode = "";
+var scriptUrl = "";
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function money(v){ return num(v).toLocaleString("ar-EG",{maximumFractionDigits:2}) + " ج.م"; }
+function todayStr(){
+  try { return new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Cairo"}).format(new Date()); }
+  catch(e){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+}
+function monthPrefix(){ return todayStr().slice(0,7); }
+function fmtDate(dstr){
+  if(!dstr) return "—";
+  try { return new Intl.DateTimeFormat("ar-EG",{weekday:"long", day:"numeric", month:"long", year:"numeric", timeZone:"Africa/Cairo"}).format(new Date(dstr+"T12:00:00")); }
+  catch(e){ return dstr; }
+}
+var toastTimer = null;
+function toast(msg, isErr){
+  var t = $("toast"); t.textContent = msg; t.className = "toast" + (isErr ? " err" : "");
+  clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.classList.add("hidden"); }, 3600);
+}
+
+/* ================= API ================= */
+function api(payload){
+  return fetch(scriptUrl, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain;charset=utf-8"},
+    body: JSON.stringify(payload)
+  }).then(function(r){
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return r.text();
+  }).then(function(txt){
+    try { return JSON.parse(txt); }
+    catch(e){ throw new Error("رد غير مفهوم من خادم الربط"); }
+  });
+}
+function unwrap(res){
+  if(res && res.data && typeof res.data === "object") return res.data;
+  if(res && res.state && typeof res.state === "object") return res.state;
+  return res || {};
+}
+/* Tolerance for backend values: dates must end up yyyy-MM-dd and times HH:mm
+   even if the sheet/script hands back JS Date strings like
+   "Sun Nov 22 2026 00:00:00 GMT+0200 ..." or "Sat Dec 30 1899 21:36:00 ...",
+   and visit results must end up as the Arabic labels the dashboard compares
+   against ("طلب") even if the raw English codes (order/no/closed) arrive. */
+function normDateStr_(v){
+  if(v == null) return "";
+  var s = String(v).trim();
+  if(!s) return "";
+  var m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+  var months = {Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12};
+  var e = s.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})\s+(\d{4})/);
+  if(e) return e[3] + "-" + ("0" + months[e[1]]).slice(-2) + "-" + ("0" + e[2]).slice(-2);
+  return s;
+}
+function normTimeStr_(v){
+  if(v == null) return "";
+  var s = String(v).trim();
+  if(!s) return "";
+  var m = s.match(/(\d{1,2}):(\d{2})/);
+  if(m) return ("0" + m[1]).slice(-2) + ":" + m[2];
+  return s;
+}
+function mapResult_(v){
+  var s = String(v == null ? "" : v).trim();
+  if(s === "order") return "طلب";
+  if(s === "no") return "لم يشترِ";
+  if(s === "closed") return "المحل مغلق";
+  return s;
+}
+function normalizeList(list, kind){
+  if(!Array.isArray(list)) return [];
+  return list.map(function(it, i){
+    var o = Object.assign({}, it);
+    if(o.id == null) o.id = kind + "-" + (i+1);
+    if(kind === "product" || kind === "category"){
+      if(o.visible === undefined) o.visible = true;
+      o.visible = o.visible === true || o.visible === "true" || o.visible === 1;
+    }
+    if(kind === "category"){
+      o.isVehicle = o.isVehicle === true || o.isVehicle === "true" || o.isVehicle === 1;
+      if(!o.scope) o.scope = "general";
+    }
+    if(kind === "rep") o.target = num(o.target);
+    if(kind === "product") o.price = num(o.price);
+    if(kind === "visit" || kind === "expense"){ o.date = normDateStr_(o.date); o.time = normTimeStr_(o.time); }
+    if(kind === "visit"){ o.result = mapResult_(o.result); o.orderTotal = num(o.orderTotal); o.collected = num(o.collected); o.debt = (o.debt==null ? Math.max(0, o.orderTotal - o.collected) : num(o.debt)); }
+    if(kind === "expense") o.amount = num(o.amount);
+    return o;
+  });
+}
+function applyRemoteState(raw){
+  var d = unwrap(raw);
+  var reps = normalizeList(d.reps, "rep");
+  var products = normalizeList(d.products, "product");
+  var categories = normalizeList(d.categories, "category");
+  var shops = normalizeList(d.shops, "shop");
+  // Empty sheet (or a section the backend has not seeded yet) -> approved reference data for that section.
+  state.reps = reps.length ? reps : JSON.parse(JSON.stringify(SEED.reps));
+  state.products = products.length ? products : JSON.parse(JSON.stringify(SEED.products));
+  state.categories = categories.length ? categories : JSON.parse(JSON.stringify(SEED.categories));
+  state.shops = shops.length ? shops : JSON.parse(JSON.stringify(SEED.shops));
+  state.visits = normalizeList(d.visits, "visit");
+  state.expenses = normalizeList(d.expenses, "expense");
+}
+function applySeedState(){
+  state = JSON.parse(JSON.stringify(SEED));
+}
+function loadState(){
+  if(!connected){ applySeedState(); renderAll(); return Promise.resolve(); }
+  return api({action:"getAdminState", adminCode: adminCode}).then(function(res){
+    if(res && res.ok === false) throw new Error(res.error || res.message || "تعذر جلب البيانات");
+    applyRemoteState(res);
+    renderAll();
+  }).catch(function(err){
+    toast("تعذر تحديث البيانات من الشيت: " + err.message, true);
+    renderAll();
+  });
+}
+function saveAction(payload, okMsg){
+  if(!connected){ toast(okMsg + " (وضع المعاينة — مش مربوط بشيت)"); renderAll(); return Promise.resolve(); }
+  return api(payload).then(function(res){
+    if(res && res.ok === false) throw new Error(res.error || res.message || "الخادم رفض الحفظ");
+    toast(okMsg);
+    return loadState();
+  }).catch(function(err){
+    toast("الحفظ على الشيت ما تمش: " + err.message, true);
+    renderAll();
+  });
+}
+
+/* ================= Login ================= */
+function showLoginError(msg){
+  var e = $("loginErr"); e.textContent = msg; e.classList.remove("hidden");
+  $("loginOk").classList.add("hidden");
+}
+function enterApp(){
+  $("loginView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  var badge = $("connBadge");
+  badge.classList.toggle("demo", !connected);
+  $("connText").textContent = connected ? "متصل بالشيت الموحد" : "وضع المعاينة — بيانات مرجعية";
+  $("settingsStatus").textContent = connected
+    ? "اللوحة مربوطة برابط الشيت المحفوظ على الجهاز، وكل البيانات اللي شايفها جاية من الشيت مباشرة."
+    : "اللوحة شغالة دلوقتي بوضع المعاينة بالبيانات المرجعية المعتمدة (٤ مناديب، ١٢ صنف، ١٢ محل، ١٤ تصنيف) وأرقام التشغيل من صفر. الصق رابط الربط من الإعدادات عشان توصلها بالشيت الحقيقي.";
+  $("todayLabel").textContent = fmtDate(todayStr());
+  $("dailyDate").value = todayStr();
+  loadState();
+}
+$("loginForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  $("loginErr").classList.add("hidden"); $("loginOk").classList.add("hidden");
+  var url = $("scriptUrl").value.trim();
+  var code = $("adminCode").value.trim();
+  if(!code){ showLoginError("اكتب كود المدير الأول."); return; }
+  var btn = $("loginBtn"); btn.disabled = true; btn.textContent = "جاري الدخول…";
+
+  function finish(okConnected){
+    btn.disabled = false; btn.textContent = "دخول اللوحة";
+    if(url){ try{ localStorage.setItem(URL_KEY, url); }catch(e){} }
+    try{ sessionStorage.setItem(CODE_KEY, code); }catch(e){}
+    scriptUrl = url; adminCode = code; connected = okConnected;
+    enterApp();
+  }
+  function fail(msg){
+    btn.disabled = false; btn.textContent = "دخول اللوحة";
+    showLoginError(msg);
+  }
+
+  if(!url){
+    // No backend linked on this device: reference-data preview mode.
+    if(code === DEMO_ADMIN_CODE){ finish(false); }
+    else fail("كود المدير غير صحيح. (من غير رابط ربط، الدخول بيبقى بوضع المعاينة بكود المدير التجريبي 9999.)");
+    return;
+  }
+  scriptUrl = url;
+  api({action:"login", code: code}).then(function(res){
+    if(res && res.ok && res.user && res.user.role === "admin"){ finish(true); }
+    else if(res && res.ok === false){ fail("كود المدير غير صحيح — الدخول مرفوض من الشيت. راجع الكود وحاول تاني."); }
+    else fail("الرد من رابط الربط مش واضح. اتأكد إن الرابط هو رابط الـ Web App الصح وإن النشر معمول بصلاحية تنفيذ للجميع.");
+  }).catch(function(err){
+    fail("تعذر الاتصال برابط الربط (" + err.message + "). اتأكد من النت ومن إن الرابط شغال، أو امسح الرابط وادخل بوضع المعاينة.");
+  });
+});
+$("logoutBtn").addEventListener("click", function(){
+  try{ sessionStorage.removeItem(CODE_KEY); }catch(e){}
+  adminCode = ""; connected = false;
+  $("appView").classList.add("hidden");
+  $("loginView").classList.remove("hidden");
+  $("adminCode").value = "";
+});
+$("refreshBtn").addEventListener("click", function(){ loadState().then(function(){ toast("اتحدثت البيانات"); }); });
+
+/* ================= Tabs ================= */
+$("tabs").addEventListener("click", function(ev){
+  var b = ev.target.closest("button[data-page]"); if(!b) return;
+  document.querySelectorAll("nav.tabs button").forEach(function(x){ x.classList.toggle("active", x === b); });
+  document.querySelectorAll("section.page").forEach(function(s){ s.classList.toggle("active", s.id === "page-" + b.dataset.page); });
+  if(b.dataset.page === "daily") renderDaily();
+});
+
+/* ================= Rendering helpers ================= */
+function repName(id, fallback){
+  if(fallback) return fallback;
+  var r = state.reps.find(function(x){ return String(x.id) === String(id); });
+  return r ? r.name : (id || "—");
+}
+function shopBalance(name){
+  var b = {orders:0, collected:0, debt:0};
+  state.visits.forEach(function(v){
+    if(v.shopName === name && v.result === "طلب"){ b.orders += num(v.orderTotal); b.collected += num(v.collected); b.debt += num(v.debt); }
+  });
+  return b;
+}
+function resultChip(r){
+  if(r === "طلب") return '<span class="chip order">طلب</span>';
+  if(r === "المحل مغلق") return '<span class="chip closed">المحل مغلق</span>';
+  return '<span class="chip">لم يشترِ</span>';
+}
+function itemsText(items){
+  if(!items) return "";
+  if(typeof items === "string") return items;
+  if(Array.isArray(items)) return items.map(function(it){
+    if(typeof it === "string") return it;
+    var q = it.qty != null ? it.qty : it.quantity;
+    return (it.name || "صنف") + (q ? " × " + q : "");
+  }).join("، ");
+  return "";
+}
+
+function renderAll(){
+  renderOverview(); renderReps(); renderProducts(); renderCategories();
+  renderShops(); renderVisits(); renderExpenses(); fillRepSelects(); renderDaily();
+}
+
+/* ---------- Overview ---------- */
+function renderOverview(){
+  var t = todayStr(), m = monthPrefix();
+  var tv = state.visits.filter(function(v){ return v.date === t; });
+  var te = state.expenses.filter(function(x){ return x.date === t; });
+  var orders = tv.filter(function(v){ return v.result === "طلب"; });
+  var sales = orders.reduce(function(s,v){ return s + num(v.orderTotal); }, 0);
+  var coll = orders.reduce(function(s,v){ return s + num(v.collected); }, 0);
+  var exp = te.reduce(function(s,x){ return s + num(x.amount); }, 0);
+  var cards = [
+    ["زيارات النهاردة", tv.length], ["طلبات النهاردة", orders.length],
+    ["مبيعات النهاردة", money(sales)], ["تحصيل النهاردة", money(coll)],
+    ["آجل النهاردة", money(sales - coll)], ["مصروفات النهاردة", money(exp)]
+  ];
+  $("todayCards").innerHTML = cards.map(function(c){ return '<div class="stat"><div class="num">' + c[1] + '</div><div class="lbl">' + c[0] + "</div></div>"; }).join("");
+
+  $("targetBody").innerHTML = state.reps.map(function(r){
+    var ms = state.visits.filter(function(v){ return v.repId === r.id || v.repName === r.name; })
+      .filter(function(v){ return (v.date || "").slice(0,7) === m && v.result === "طلب"; })
+      .reduce(function(s,v){ return s + num(v.orderTotal); }, 0);
+    var pct = r.target > 0 ? Math.min(100, Math.round(ms / r.target * 100)) : 0;
+    return "<tr><td><strong>" + esc(r.name) + "</strong></td><td>" + esc(r.area || "—") + '</td><td class="num-cell">' + money(ms) + '</td><td class="num-cell">' + money(r.target) + '</td><td class="num-cell">' + pct + '%</td><td><div class="progress"><i style="width:' + pct + '%"></i></div></td></tr>';
+  }).join("") || '<tr><td colspan="6" class="empty">لا يوجد مناديب بعد</td></tr>';
+
+  var acts = [];
+  state.visits.forEach(function(v){ acts.push({date:v.date, time:v.time, txt:"زيارة: " + repName(v.repId, v.repName) + " ← " + (v.shopName || "") + " — " + (v.result || ""), sort:(v.date||"")+" "+(v.time||"")}); });
+  state.expenses.forEach(function(x){ acts.push({date:x.date, time:x.time, txt:"مصروف: " + repName(x.repId, x.repName) + " — " + (x.category || "") + " بقيمة " + money(x.amount), sort:(x.date||"")+" "+(x.time||"")}); });
+  acts.sort(function(a,b){ return b.sort.localeCompare(a.sort); });
+  $("recentList").innerHTML = acts.length
+    ? acts.slice(0,10).map(function(a){ return '<p style="margin:.35rem 0"><span class="chip">' + esc(a.date || "") + (a.time ? " " + esc(a.time) : "") + "</span> " + esc(a.txt) + "</p>"; }).join("")
+    : '<p class="empty">لسه مفيش نشاط مسجل — الزيارات والمصروفات هتظهر هنا أول ما المناديب يشتغلوا.</p>';
+
+  var debts = state.shops.map(function(s){ var b = shopBalance(s.name); return {name:s.name, area:s.area, debt:b.debt}; })
+    .filter(function(x){ return x.debt > 0; }).sort(function(a,b){ return b.debt - a.debt; });
+  $("debtList").innerHTML = debts.length
+    ? debts.map(function(d){ return '<p style="margin:.35rem 0"><strong>' + esc(d.name) + '</strong> <span class="muted">(' + esc(d.area || "") + ')</span> — مستحق: <span class="debt">' + money(d.debt) + "</span></p>"; }).join("")
+    : '<p class="empty">مفيش مديونيات على المحلات دلوقتي.</p>';
+}
+
+/* ---------- Reps ---------- */
+function renderReps(){
+  $("repsBody").innerHTML = state.reps.map(function(r){
+    return "<tr><td><strong>" + esc(r.name) + '</strong></td><td class="num-cell" dir="ltr">' + esc(r.code || "") + "</td><td>" + esc(r.area || "—") + "</td><td>" + esc(r.line || "—") + "</td><td>" + esc(r.vehicle || "—") + '</td><td class="num-cell">' + money(r.target) + '</td><td><button type="button" class="btn-sm" data-edit-rep="' + esc(r.id) + '">تعديل</button></td></tr>';
+  }).join("") || '<tr><td colspan="7" class="empty">لا يوجد مناديب</td></tr>';
+}
+$("newRepBtn").addEventListener("click", function(){
+  $("repForm").reset(); $("repId").value = ""; $("repFormTitle").textContent = "إضافة مندوب";
+  $("repFormPanel").classList.remove("hidden"); $("repName").focus();
+});
+$("repCancel").addEventListener("click", function(){ $("repFormPanel").classList.add("hidden"); });
+$("repsBody").addEventListener("click", function(ev){
+  var b = ev.target.closest("[data-edit-rep]"); if(!b) return;
+  var r = state.reps.find(function(x){ return String(x.id) === b.dataset.editRep; }); if(!r) return;
+  $("repId").value = r.id; $("repName").value = r.name || ""; $("repCode").value = r.code || "";
+  $("repArea").value = r.area || ""; $("repLine").value = r.line || ""; $("repVehicle").value = r.vehicle || "";
+  $("repTarget").value = r.target || "";
+  $("repFormTitle").textContent = "تعديل مندوب — " + r.name;
+  $("repFormPanel").classList.remove("hidden");
+});
+$("repForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var rep = {
+    id: $("repId").value || undefined,
+    name: $("repName").value.trim(), code: $("repCode").value.trim(),
+    area: $("repArea").value.trim(), line: $("repLine").value.trim(),
+    vehicle: $("repVehicle").value.trim(), target: num($("repTarget").value)
+  };
+  if(!rep.id) rep.id = "rep-" + Date.now();
+  var idx = state.reps.findIndex(function(x){ return String(x.id) === String(rep.id); });
+  if(idx >= 0) state.reps[idx] = rep; else state.reps.push(rep);
+  $("repFormPanel").classList.add("hidden");
+  saveAction({action:"upsertRep", adminCode: adminCode, rep: rep}, "اتحفظ المندوب «" + rep.name + "»");
+});
+
+/* ---------- Products ---------- */
+function productCategoryOptions(selected){
+  var cats = state.categories.filter(function(c){ return c.scope === "product" || c.scope === "general"; });
+  var names = cats.map(function(c){ return c.name; });
+  if(selected && names.indexOf(selected) < 0) names.push(selected);
+  return names.map(function(n){ return '<option value="' + esc(n) + '"' + (n === selected ? " selected" : "") + ">" + esc(n) + "</option>"; }).join("");
+}
+function renderProducts(){
+  $("productsBody").innerHTML = state.products.map(function(p){
+    return "<tr><td><strong>" + esc(p.name) + "</strong></td><td>" + esc(p.category || "—") + "</td><td>" + esc(p.size || "—") + '</td><td class="num-cell">' + money(p.price) + "</td>" +
+      '<td><button type="button" class="btn-sm" data-toggle-product="' + esc(p.id) + '">' + (p.visible ? "ظاهر — دوس للإخفاء" : "مخفي — دوس للإظهار") + "</button>" + (p.visible ? "" : ' <span class="chip hidden-chip">مخفي عن المندوب</span>') + "</td>" +
+      '<td><button type="button" class="btn-sm" data-edit-product="' + esc(p.id) + '">تعديل</button></td></tr>';
+  }).join("") || '<tr><td colspan="6" class="empty">لا توجد أصناف</td></tr>';
+  $("productCategory").innerHTML = productCategoryOptions($("productCategory").value);
+}
+$("newProductBtn").addEventListener("click", function(){
+  $("productForm").reset(); $("productId").value = ""; $("productVisible").checked = true;
+  $("productCategory").innerHTML = productCategoryOptions("");
+  $("productFormTitle").textContent = "إضافة صنف"; $("productFormPanel").classList.remove("hidden"); $("productName").focus();
+});
+$("productCancel").addEventListener("click", function(){ $("productFormPanel").classList.add("hidden"); });
+$("productsBody").addEventListener("click", function(ev){
+  var t = ev.target.closest("[data-toggle-product]");
+  if(t){
+    var p = state.products.find(function(x){ return String(x.id) === t.dataset.toggleProduct; }); if(!p) return;
+    p.visible = !p.visible;
+    saveAction({action:"setProductVisible", adminCode: adminCode, id: p.id, visible: p.visible}, p.visible ? "الصنف بقى ظاهر للمندوب" : "الصنف بقى مخفي عن المندوب");
+    return;
+  }
+  var b = ev.target.closest("[data-edit-product]"); if(!b) return;
+  var pr = state.products.find(function(x){ return String(x.id) === b.dataset.editProduct; }); if(!pr) return;
+  $("productId").value = pr.id; $("productName").value = pr.name || "";
+  $("productCategory").innerHTML = productCategoryOptions(pr.category || "");
+  $("productSize").value = pr.size || ""; $("productPrice").value = pr.price || "";
+  $("productVisible").checked = !!pr.visible;
+  $("productFormTitle").textContent = "تعديل صنف — " + pr.name;
+  $("productFormPanel").classList.remove("hidden");
+});
+$("productForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var product = {
+    id: $("productId").value || undefined,
+    name: $("productName").value.trim(), category: $("productCategory").value,
+    size: $("productSize").value.trim(), price: num($("productPrice").value),
+    visible: $("productVisible").checked
+  };
+  if(!product.id) product.id = "prod-" + Date.now();
+  var idx = state.products.findIndex(function(x){ return String(x.id) === String(product.id); });
+  if(idx >= 0) state.products[idx] = product; else state.products.push(product);
+  $("productFormPanel").classList.add("hidden");
+  saveAction({action:"upsertProduct", adminCode: adminCode, product: product}, "اتحفظ الصنف «" + product.name + "»");
+});
+
+/* ---------- Categories ---------- */
+var SCOPE_LABEL = {product:"أصناف", expense:"مصروفات", general:"عام"};
+function renderCategories(){
+  $("categoriesBody").innerHTML = state.categories.map(function(c){
+    return "<tr><td><strong>" + esc(c.name) + "</strong></td><td>" + esc(SCOPE_LABEL[c.scope] || c.scope || "عام") + "</td><td>" + (c.isVehicle ? "أيوه" : "لأ") + "</td>" +
+      '<td><button type="button" class="btn-sm" data-toggle-category="' + esc(c.id) + '">' + (c.visible ? "ظاهر — دوس للإخفاء" : "مخفي — دوس للإظهار") + "</button>" + (c.visible ? "" : ' <span class="chip hidden-chip">مخفي عن المندوب</span>') + "</td>" +
+      '<td><button type="button" class="btn-sm" data-edit-category="' + esc(c.id) + '">تعديل</button></td></tr>';
+  }).join("") || '<tr><td colspan="5" class="empty">لا توجد تصنيفات</td></tr>';
+}
+$("newCategoryBtn").addEventListener("click", function(){
+  $("categoryForm").reset(); $("categoryId").value = ""; $("categoryVisible").checked = true; $("categoryVehicle").checked = false;
+  $("categoryFormTitle").textContent = "إضافة تصنيف"; $("categoryFormPanel").classList.remove("hidden"); $("categoryName").focus();
+});
+$("categoryCancel").addEventListener("click", function(){ $("categoryFormPanel").classList.add("hidden"); });
+$("categoriesBody").addEventListener("click", function(ev){
+  var t = ev.target.closest("[data-toggle-category]");
+  if(t){
+    var c = state.categories.find(function(x){ return String(x.id) === t.dataset.toggleCategory; }); if(!c) return;
+    c.visible = !c.visible;
+    saveAction({action:"setCategoryVisible", adminCode: adminCode, id: c.id, visible: c.visible}, c.visible ? "التصنيف بقى ظاهر للمندوب" : "التصنيف بقى مخفي عن المندوب");
+    return;
+  }
+  var b = ev.target.closest("[data-edit-category]"); if(!b) return;
+  var cat = state.categories.find(function(x){ return String(x.id) === b.dataset.editCategory; }); if(!cat) return;
+  $("categoryId").value = cat.id; $("categoryName").value = cat.name || "";
+  $("categoryScope").value = cat.scope || "general";
+  $("categoryVisible").checked = !!cat.visible; $("categoryVehicle").checked = !!cat.isVehicle;
+  $("categoryFormTitle").textContent = "تعديل تصنيف — " + cat.name;
+  $("categoryFormPanel").classList.remove("hidden");
+});
+$("categoryForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var category = {
+    id: $("categoryId").value || undefined,
+    name: $("categoryName").value.trim(), scope: $("categoryScope").value,
+    visible: $("categoryVisible").checked, isVehicle: $("categoryVehicle").checked
+  };
+  if(!category.id) category.id = "cat-" + Date.now();
+  var idx = state.categories.findIndex(function(x){ return String(x.id) === String(category.id); });
+  if(idx >= 0) state.categories[idx] = category; else state.categories.push(category);
+  $("categoryFormPanel").classList.add("hidden");
+  saveAction({action:"upsertCategory", adminCode: adminCode, category: category}, "اتحفظ التصنيف «" + category.name + "»");
+});
+
+/* ---------- Shops ---------- */
+function renderShops(){
+  $("shopsBody").innerHTML = state.shops.map(function(s){
+    var b = shopBalance(s.name);
+    return "<tr><td><strong>" + esc(s.name) + "</strong></td><td>" + esc(s.area || "—") + "</td><td>" + esc(repName(s.repId)) + '</td><td class="num-cell">' + money(b.orders) + '</td><td class="num-cell">' + money(b.collected) + '</td><td class="num-cell">' + (b.debt > 0 ? '<span class="debt">' + money(b.debt) + "</span>" : money(0)) + "</td></tr>";
+  }).join("") || '<tr><td colspan="6" class="empty">لا توجد محلات</td></tr>';
+}
+
+/* ---------- Visits & Expenses ---------- */
+function fillRepSelects(){
+  var opts = state.reps.map(function(r){ return '<option value="' + esc(r.id) + '">' + esc(r.name) + "</option>"; }).join("");
+  [["visitRepFilter", true], ["expRepFilter", true], ["dailyRep", false]].forEach(function(pair){
+    var sel = $(pair[0]); var cur = sel.value;
+    sel.innerHTML = (pair[1] ? '<option value="">كل المناديب</option>' : "") + opts;
+    if(cur) sel.value = cur;
+  });
+}
+function matchRep(v, selVal){
+  if(!selVal) return true;
+  if(String(v.repId) === String(selVal)) return true;
+  var r = state.reps.find(function(x){ return String(x.id) === String(selVal); });
+  return r && v.repName === r.name;
+}
+function renderVisits(){
+  var rf = $("visitRepFilter").value, df = $("visitDateFilter").value;
+  var list = state.visits.filter(function(v){ return matchRep(v, rf) && (!df || v.date === df); })
+    .slice().sort(function(a,b){ return ((b.date||"")+" "+(b.time||"")).localeCompare((a.date||"")+" "+(a.time||"")); });
+  $("visitsBody").innerHTML = list.map(function(v){
+    var note = [itemsText(v.items), v.reason ? "السبب: " + v.reason : "", v.notes || ""].filter(Boolean).join(" — ");
+    return "<tr><td class='num-cell'>" + esc(v.date || "") + (v.time ? " " + esc(v.time) : "") + "</td><td>" + esc(repName(v.repId, v.repName)) + "</td><td><strong>" + esc(v.shopName || "") + "</strong></td><td>" + resultChip(v.result) + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.orderTotal) : "—") + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.collected) : "—") + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.debt) : "—") + "</td><td>" + esc(note || "—") + "</td></tr>";
+  }).join("") || '<tr><td colspan="8" class="empty">لا توجد زيارات مطابقة</td></tr>';
+}
+function renderExpenses(){
+  var t = todayStr();
+  var todayExp = state.expenses.filter(function(x){ return x.date === t; }).reduce(function(s,x){ return s + num(x.amount); }, 0);
+  var monthExp = state.expenses.filter(function(x){ return (x.date || "").slice(0,7) === monthPrefix(); }).reduce(function(s,x){ return s + num(x.amount); }, 0);
+  var vehExp = state.expenses.filter(function(x){
+    var c = state.categories.find(function(cc){ return cc.name === x.category; });
+    return c && c.isVehicle;
+  }).reduce(function(s,x){ return s + num(x.amount); }, 0);
+  $("expenseCards").innerHTML = [["مصروفات النهاردة", money(todayExp)], ["مصروفات الشهر", money(monthExp)], ["منها مصروفات عربيات (الكل)", money(vehExp)]]
+    .map(function(c){ return '<div class="stat"><div class="num">' + c[1] + '</div><div class="lbl">' + c[0] + "</div></div>"; }).join("");
+  var rf = $("expRepFilter").value, df = $("expDateFilter").value;
+  var list = state.expenses.filter(function(x){ return matchRep(x, rf) && (!df || x.date === df); })
+    .slice().sort(function(a,b){ return ((b.date||"")+" "+(b.time||"")).localeCompare((a.date||"")+" "+(a.time||"")); });
+  $("expensesBody").innerHTML = list.map(function(x){
+    return "<tr><td class='num-cell'>" + esc(x.date || "") + (x.time ? " " + esc(x.time) : "") + "</td><td>" + esc(repName(x.repId, x.repName)) + "</td><td>" + esc(x.category || "") + '</td><td class="num-cell">' + money(x.amount) + "</td><td>" + esc(x.note || "—") + "</td></tr>";
+  }).join("") || '<tr><td colspan="5" class="empty">لا توجد مصروفات مطابقة</td></tr>';
+}
+$("visitRepFilter").addEventListener("change", renderVisits);
+$("visitDateFilter").addEventListener("change", renderVisits);
+$("visitClearFilter").addEventListener("click", function(){ $("visitDateFilter").value = ""; $("visitRepFilter").value = ""; renderVisits(); });
+$("expRepFilter").addEventListener("change", renderExpenses);
+$("expDateFilter").addEventListener("change", renderExpenses);
+$("expClearFilter").addEventListener("click", function(){ $("expDateFilter").value = ""; $("expRepFilter").value = ""; renderExpenses(); });
+
+/* ---------- Daily sheet ---------- */
+function dailyData(){
+  var repId = $("dailyRep").value;
+  var rep = state.reps.find(function(r){ return String(r.id) === String(repId); });
+  var date = $("dailyDate").value || todayStr();
+  var visits = state.visits.filter(function(v){ return v.date === date && (rep ? (String(v.repId) === String(rep.id) || v.repName === rep.name) : true); })
+    .slice().sort(function(a,b){ return (a.time || "").localeCompare(b.time || ""); });
+  var expenses = state.expenses.filter(function(x){ return x.date === date && (rep ? (String(x.repId) === String(rep.id) || x.repName === rep.name) : true); });
+  var orders = visits.filter(function(v){ return v.result === "طلب"; });
+  var totals = {
+    visits: visits.length, orders: orders.length,
+    sales: orders.reduce(function(s,v){ return s + num(v.orderTotal); }, 0),
+    collected: orders.reduce(function(s,v){ return s + num(v.collected); }, 0),
+    debt: orders.reduce(function(s,v){ return s + num(v.debt); }, 0),
+    expenses: expenses.reduce(function(s,x){ return s + num(x.amount); }, 0)
+  };
+  return {rep: rep, date: date, visits: visits, expenses: expenses, totals: totals};
+}
+function dailyHtml(d){
+  var vRows = d.visits.map(function(v){
+    var note = [itemsText(v.items), v.reason || "", v.notes || ""].filter(Boolean).join(" — ");
+    return "<tr><td>" + esc(v.time || "") + "</td><td>" + esc(v.shopName || "") + "</td><td>" + esc(v.result || "") + "</td><td>" + esc(note || "—") + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.orderTotal) : "—") + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.collected) : "—") + '</td><td class="num-cell">' + (v.result === "طلب" ? money(v.debt) : "—") + "</td></tr>";
+  }).join("") || '<tr><td colspan="7" class="empty">لا توجد زيارات في اليوم ده</td></tr>';
+  var eRows = d.expenses.map(function(x){
+    return "<tr><td>" + esc(x.time || "") + "</td><td>" + esc(x.category || "") + "</td><td>" + esc(x.note || "—") + '</td><td class="num-cell">' + money(x.amount) + "</td></tr>";
+  }).join("") || '<tr><td colspan="4" class="empty">لا توجد مصروفات في اليوم ده</td></tr>';
+  return '<div class="panel"><h3>يومية ' + esc(d.rep ? d.rep.name : "") + " — " + fmtDate(d.date) + "</h3>" +
+    '<div class="cards">' +
+    [["عدد الزيارات", d.totals.visits], ["عدد الطلبات", d.totals.orders], ["مبيعات اليوم", money(d.totals.sales)], ["تحصيل اليوم", money(d.totals.collected)], ["آجل اليوم", money(d.totals.debt)], ["مصروفات اليوم", money(d.totals.expenses)]]
+      .map(function(c){ return '<div class="stat"><div class="num">' + c[1] + '</div><div class="lbl">' + c[0] + "</div></div>"; }).join("") +
+    "</div>" +
+    '<h3 style="margin-top:.6rem">الزيارات والطلبات</h3><div class="tbl-wrap"><table><thead><tr><th>الوقت</th><th>المحل</th><th>النتيجة</th><th>التفاصيل</th><th>قيمة الطلب</th><th>المحصّل</th><th>الآجل</th></tr></thead><tbody>' + vRows + "</tbody></table></div>" +
+    '<h3 style="margin-top:1rem">مصروفات اليوم</h3><div class="tbl-wrap"><table><thead><tr><th>الوقت</th><th>التصنيف</th><th>ملحوظة</th><th>المبلغ</th></tr></thead><tbody>' + eRows + "</tbody></table></div>" +
+    '<p style="margin-top:1rem"><strong>صافي تحصيل اليوم بعد المصروفات: ' + money(d.totals.collected - d.totals.expenses) + "</strong></p></div>";
+}
+function renderDaily(){
+  if(!$("dailyRep").options.length) return;
+  if(!$("dailyDate").value) $("dailyDate").value = todayStr();
+  $("dailyResult").innerHTML = dailyHtml(dailyData());
+}
+$("dailyShow").addEventListener("click", renderDaily);
+$("dailyRep").addEventListener("change", renderDaily);
+$("dailyDate").addEventListener("change", renderDaily);
+
+function buildPrintView(d){
+  var vRows = d.visits.map(function(v){
+    var note = [itemsText(v.items), v.reason || "", v.notes || ""].filter(Boolean).join(" — ");
+    return "<tr><td>" + esc(v.time || "") + "</td><td>" + esc(v.shopName || "") + "</td><td>" + esc(v.result || "") + "</td><td>" + esc(note || "—") + "</td><td>" + (v.result === "طلب" ? money(v.orderTotal) : "—") + "</td><td>" + (v.result === "طلب" ? money(v.collected) : "—") + "</td><td>" + (v.result === "طلب" ? money(v.debt) : "—") + "</td></tr>";
+  }).join("");
+  var eRows = d.expenses.map(function(x){
+    return "<tr><td>" + esc(x.time || "") + "</td><td>" + esc(x.category || "") + "</td><td>" + esc(x.note || "—") + "</td><td>" + money(x.amount) + "</td></tr>";
+  }).join("");
+  $("printView").innerHTML =
+    "<h1>يومية مندوب — " + esc(d.rep ? d.rep.name : "") + "</h1>" +
+    "<p>اليوم: " + fmtDate(d.date) + (d.rep && d.rep.area ? " — المنطقة: " + esc(d.rep.area) : "") + "</p>" +
+    "<h2>الزيارات والطلبات</h2><table><thead><tr><th>الوقت</th><th>المحل</th><th>النتيجة</th><th>التفاصيل</th><th>قيمة الطلب</th><th>المحصّل</th><th>الآجل</th></tr></thead><tbody>" + (vRows || '<tr><td colspan="7">لا توجد زيارات</td></tr>') + "</tbody></table>" +
+    "<h2>مصروفات اليوم</h2><table><thead><tr><th>الوقت</th><th>التصنيف</th><th>ملحوظة</th><th>المبلغ</th></tr></thead><tbody>" + (eRows || '<tr><td colspan="4">لا توجد مصروفات</td></tr>') + "</tbody></table>" +
+    "<h2>إجماليات اليوم</h2><table><tbody>" +
+    "<tr><td>عدد الزيارات</td><td>" + d.totals.visits + "</td><td>عدد الطلبات</td><td>" + d.totals.orders + "</td></tr>" +
+    "<tr><td>مبيعات اليوم</td><td>" + money(d.totals.sales) + "</td><td>تحصيل اليوم</td><td>" + money(d.totals.collected) + "</td></tr>" +
+    "<tr><td>آجل اليوم</td><td>" + money(d.totals.debt) + "</td><td>مصروفات اليوم</td><td>" + money(d.totals.expenses) + "</td></tr>" +
+    "<tr><td><strong>صافي التحصيل بعد المصروفات</strong></td><td><strong>" + money(d.totals.collected - d.totals.expenses) + "</strong></td><td></td><td></td></tr>" +
+    "</tbody></table>";
+}
+$("dailyPrint").addEventListener("click", function(){
+  buildPrintView(dailyData());
+  setTimeout(function(){ try{ window.print(); }catch(e){} }, 60);
+});
+
+function dailyRows(d){
+  var rows = [["يومية مندوب", d.rep ? d.rep.name : ""], ["التاريخ", d.date], []];
+  rows.push(["الزيارات والطلبات"]);
+  rows.push(["الوقت", "المحل", "النتيجة", "التفاصيل", "قيمة الطلب", "المحصّل", "الآجل"]);
+  d.visits.forEach(function(v){
+    rows.push([v.time || "", v.shopName || "", v.result || "", [itemsText(v.items), v.reason || "", v.notes || ""].filter(Boolean).join(" — "), v.result === "طلب" ? num(v.orderTotal) : "", v.result === "طلب" ? num(v.collected) : "", v.result === "طلب" ? num(v.debt) : ""]);
+  });
+  rows.push([]);
+  rows.push(["مصروفات اليوم"]);
+  rows.push(["الوقت", "التصنيف", "ملحوظة", "المبلغ"]);
+  d.expenses.forEach(function(x){ rows.push([x.time || "", x.category || "", x.note || "", num(x.amount)]); });
+  rows.push([]);
+  rows.push(["إجماليات اليوم"]);
+  rows.push(["عدد الزيارات", d.totals.visits, "عدد الطلبات", d.totals.orders]);
+  rows.push(["مبيعات اليوم", d.totals.sales, "تحصيل اليوم", d.totals.collected]);
+  rows.push(["آجل اليوم", d.totals.debt, "مصروفات اليوم", d.totals.expenses]);
+  rows.push(["صافي التحصيل بعد المصروفات", d.totals.collected - d.totals.expenses]);
+  return rows;
+}
+function downloadBlob(blob, filename){
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+}
+function dailyFilename(d){ return "يومية-" + (d.rep ? d.rep.name : "مندوب") + "-" + d.date; }
+$("dailyCsv").addEventListener("click", function(){
+  var d = dailyData();
+  var csv = dailyRows(d).map(function(r){
+    return r.map(function(c){ var s = String(c == null ? "" : c); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(",");
+  }).join("\r\n");
+  downloadBlob(new Blob(["\ufeff" + csv], {type:"text/csv;charset=utf-8"}), dailyFilename(d) + ".csv");
+  toast("اتنزّل ملف CSV لليومية");
+});
+$("dailyXlsx").addEventListener("click", function(){
+  var d = dailyData();
+  if(window.XLSX){
+    var ws = XLSX.utils.aoa_to_sheet(dailyRows(d));
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "اليومية");
+    XLSX.writeFile(wb, dailyFilename(d) + ".xlsx");
+    toast("اتنزّل ملف Excel لليومية");
+  } else {
+    var html = "<table>" + dailyRows(d).map(function(r){ return "<tr>" + r.map(function(c){ return "<td>" + esc(c == null ? "" : c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</table>";
+    downloadBlob(new Blob(["\ufeff" + html], {type:"application/vnd.ms-excel"}), dailyFilename(d) + ".xls");
+    toast("اتنزّل ملف Excel لليومية");
+  }
+});
+
+/* ---------- Settings ---------- */
+$("urlForm").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var url = $("settingsUrl").value.trim();
+  if(url){ try{ localStorage.setItem(URL_KEY, url); }catch(e){} scriptUrl = url; toast("اتحفظ رابط الربط على الجهاز — هيتستخدم من الدخلة الجاية"); }
+  else toast("الرابط فاضي — اكتب رابط صالح الأول", true);
+});
+$("clearUrlBtn").addEventListener("click", function(){
+  try{ localStorage.removeItem(URL_KEY); }catch(e){}
+  $("settingsUrl").value = ""; scriptUrl = "";
+  toast("اتمسح رابط الربط من الجهاز");
+});
+
+/* ---------- Init ---------- */
+(function init(){
+  var savedUrl = "";
+  try{ savedUrl = localStorage.getItem(URL_KEY) || ""; }catch(e){}
+  if(savedUrl){ $("scriptUrl").value = savedUrl; $("settingsUrl").value = savedUrl; }
+  else { $("scriptUrl").value = DEFAULT_URL; $("settingsUrl").value = DEFAULT_URL; }
+  var savedCode = "";
+  try{ savedCode = sessionStorage.getItem(CODE_KEY) || ""; }catch(e){}
+  if(savedCode) $("adminCode").value = savedCode;
+})();
+</script>
+</body>
+</html>

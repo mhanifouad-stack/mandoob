@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>تطبيق المندوب</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        color-scheme: light dark;
+        --bg:#faf5ee;
+        --surface:#ffffff;
+        --surface2:#f4ead9;
+        --ink:#2c1a0e;
+        --muted:#7d6a58;
+        --line:#e7dac7;
+        --brand:#7c3f16;
+        --brand-ink:#ffffff;
+        --accent:#c47b21;
+        --accent-soft:#f7e8d2;
+        --ok:#177245;
+        --ok-soft:#e2f2e7;
+        --warn:#a16207;
+        --warn-soft:#fdf0d3;
+        --bad:#b3352b;
+        --bad-soft:#fbe7e4;
+        --closed:#5b6b7c;
+        --closed-soft:#e8edf1;
+        --shadow:0 10px 28px rgba(60,32,8,.13);
+        --radius:16px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#16100a;
+          --surface:#241a10;
+          --surface2:#2e2113;
+          --ink:#f6ecdb;
+          --muted:#bda88f;
+          --line:#3d2d1b;
+          --brand:#e2a458;
+          --brand-ink:#241503;
+          --accent:#e2a458;
+          --accent-soft:#3a2a12;
+          --ok:#4cc07c;
+          --ok-soft:#17301f;
+          --warn:#e5b84f;
+          --warn-soft:#38300f;
+          --bad:#f0837a;
+          --bad-soft:#3d1a16;
+          --closed:#9db2c4;
+          --closed-soft:#232c33;
+          --shadow:0 10px 28px rgba(0,0,0,.5);
+        }
+      }
+      *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+      html,body{margin:0;padding:0}
+      body{
+        font-family:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+        background:var(--bg);color:var(--ink);
+        min-height:100dvh;
+      }
+      button,[role="button"],select,input,textarea{font-family:inherit;font-size:1rem}
+      button{cursor:pointer}
+      :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+      /* ---------- Login ---------- */
+      .login-wrap{max-width:480px;margin:0 auto;padding:28px 18px 40px}
+      .brand-head{text-align:center;margin:18px 0 22px}
+      .brand-mark{
+        width:74px;height:74px;margin:0 auto 12px;border-radius:22px;
+        background:var(--brand);color:var(--brand-ink);
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:var(--shadow);
+      }
+      .brand-head h1{font-size:1.65rem;margin:0 0 4px;font-weight:700}
+      .brand-head p{margin:0;color:var(--muted);font-size:.98rem}
+      .card{
+        background:var(--surface);border:1px solid var(--line);
+        border-radius:var(--radius);padding:18px;margin-bottom:14px;
+        box-shadow:0 2px 10px rgba(60,32,8,.05);
+      }
+      .card h2{font-size:1.02rem;margin:0 0 12px;font-weight:600}
+      .field-label{display:block;font-size:.88rem;color:var(--muted);margin:0 0 6px;font-weight:500}
+      .rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+      .rep-chip{
+        min-height:52px;padding:10px;border-radius:12px;border:1.5px solid var(--line);
+        background:var(--surface);color:var(--ink);text-align:right;
+      }
+      .rep-chip .rn{display:block;font-weight:600;font-size:.98rem}
+      .rep-chip .rr{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+      .rep-chip.sel{border-color:var(--brand);background:var(--accent-soft)}
+      .text-input{
+        width:100%;min-height:50px;padding:10px 14px;border-radius:12px;
+        border:1.5px solid var(--line);background:var(--surface);color:var(--ink);
+      }
+      .text-input::placeholder{color:var(--muted)}
+      .code-input{text-align:center;font-size:1.5rem;letter-spacing:.5em;font-weight:700;direction:ltr}
+      .hint{font-size:.82rem;color:var(--muted);line-height:1.7;margin:8px 0 0}
+      .err{
+        display:none;background:var(--bad-soft);color:var(--bad);
+        border-radius:10px;padding:10px 12px;font-size:.9rem;margin:12px 0 0;font-weight:500;
+      }
+      .err.show{display:block}
+      .btn{
+        display:flex;align-items:center;justify-content:center;gap:8px;
+        min-height:52px;padding:12px 18px;border-radius:14px;border:none;
+        font-weight:700;font-size:1.02rem;
+      }
+      .btn-primary{background:var(--brand);color:var(--brand-ink);width:100%}
+      .btn-primary:disabled{opacity:.55;cursor:default}
+      .btn-ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+      .btn-block{width:100%}
+      .conn-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-start:6px;vertical-align:middle}
+      .conn-on{background:var(--ok)}
+      .conn-off{background:var(--warn)}
+
+      /* ---------- App shell ---------- */
+      .app{max-width:560px;margin:0 auto;padding-bottom:96px}
+      .topbar{
+        position:sticky;top:0;z-index:30;
+        background:var(--brand);color:var(--brand-ink);
+        padding:14px 16px calc(14px + env(safe-area-inset-top,0px)*0);
+        padding-top:calc(14px + env(safe-area-inset-top,0px));
+        border-radius:0 0 20px 20px;
+      }
+      @media (prefers-color-scheme: dark){ .topbar{background:#2e1d0c;color:#f6ecdb} }
+      .top-row{display:flex;align-items:center;gap:12px}
+      .avatar{
+        width:48px;height:48px;border-radius:50%;flex:none;
+        background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);
+        display:flex;align-items:center;justify-content:center;
+        font-size:1.25rem;font-weight:700;
+      }
+      .top-who{flex:1;min-width:0}
+      .top-who .nm{font-weight:700;font-size:1.12rem;line-height:1.3}
+      .top-who .rt{font-size:.85rem;opacity:.85}
+      .icon-btn{
+        width:44px;height:44px;flex:none;border-radius:12px;border:none;
+        background:rgba(255,255,255,.16);color:inherit;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .top-stats{display:flex;gap:8px;margin-top:14px}
+      .tstat{
+        flex:1;background:rgba(255,255,255,.13);border-radius:12px;
+        padding:8px 6px;text-align:center;
+      }
+      .tstat b{display:block;font-size:1.08rem;line-height:1.25}
+      .tstat span{font-size:.74rem;opacity:.88}
+      .sync-pill{
+        margin-top:10px;display:inline-flex;align-items:center;gap:7px;
+        background:rgba(255,255,255,.13);border:none;color:inherit;
+        border-radius:999px;padding:7px 13px;font-size:.82rem;min-height:36px;
+      }
+      .sync-pill .dot{width:8px;height:8px;border-radius:50%;background:#ffd166}
+      .sync-pill.synced .dot{background:#5fd68a}
+
+      main{padding:16px 14px 0}
+      .tab-page{display:none}
+      .tab-page.active{display:block}
+      .sec-title{font-size:1.05rem;font-weight:700;margin:4px 2px 12px}
+
+      .shop-card{
+        width:100%;text-align:right;display:flex;align-items:center;gap:12px;
+        background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+        padding:16px;margin-bottom:10px;color:var(--ink);min-height:72px;
+      }
+      .shop-ic{
+        width:46px;height:46px;flex:none;border-radius:13px;
+        background:var(--accent-soft);color:var(--accent);
+        display:flex;align-items:center;justify-content:center;
+      }
+      .shop-info{flex:1;min-width:0}
+      .shop-name{font-weight:600;font-size:1.03rem}
+      .shop-sub{color:var(--muted);font-size:.83rem;margin-top:2px}
+      .badge{
+        flex:none;font-size:.76rem;font-weight:600;border-radius:999px;
+        padding:5px 11px;min-height:28px;display:inline-flex;align-items:center;
+      }
+      .badge-none{background:var(--surface2);color:var(--muted)}
+      .badge-order{background:var(--ok-soft);color:var(--ok)}
+      .badge-no{background:var(--warn-soft);color:var(--warn)}
+      .badge-closed{background:var(--closed-soft);color:var(--closed)}
+
+      .empty{
+        text-align:center;color:var(--muted);padding:34px 16px;
+        background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);
+        font-size:.95rem;line-height:1.8;
+      }
+      .rec{
+        background:var(--surface);border:1px solid var(--line);border-radius:14px;
+        padding:13px 14px;margin-bottom:9px;
+      }
+      .rec-top{display:flex;align-items:baseline;gap:8px}
+      .rec-title{font-weight:600;flex:1;min-width:0}
+      .rec-amt{font-weight:700;white-space:nowrap}
+      .rec-meta{color:var(--muted);font-size:.82rem;margin-top:4px;line-height:1.7}
+      .sent-tag{font-size:.72rem;font-weight:600;border-radius:6px;padding:2px 7px;white-space:nowrap}
+      .sent-ok{background:var(--ok-soft);color:var(--ok)}
+      .sent-wait{background:var(--warn-soft);color:var(--warn)}
+
+      .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+      .sum-cell{
+        background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;
+      }
+      .sum-cell b{display:block;font-size:1.35rem;line-height:1.3}
+      .sum-cell span{color:var(--muted);font-size:.83rem}
+      .sum-cell.hl{background:var(--accent-soft);border-color:transparent}
+      .sum-cell.hl b{color:var(--brand)}
+
+      /* bottom nav */
+      .bottom-nav{
+        position:fixed;bottom:0;left:0;right:0;z-index:40;
+        background:var(--surface);border-top:1px solid var(--line);
+        padding-bottom:env(safe-area-inset-bottom,0px);
+      }
+      .bottom-nav .inner{max-width:560px;margin:0 auto;display:flex}
+      .nav-btn{
+        flex:1;min-height:62px;border:none;background:none;color:var(--muted);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+        font-size:.8rem;font-weight:600;
+      }
+      .nav-btn.active{color:var(--brand)}
+
+      /* ---------- Modals ---------- */
+      .overlay{
+        position:fixed;inset:0;z-index:60;background:rgba(20,10,2,.55);
+        display:none;align-items:flex-end;justify-content:center;
+      }
+      .overlay.open{display:flex}
+      .sheet{
+        background:var(--bg);width:100%;max-width:560px;max-height:92dvh;overflow-y:auto;
+        border-radius:22px 22px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));
+        animation:up .22s ease;
+      }
+      @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+      @media (prefers-reduced-motion: reduce){ .sheet{animation:none} }
+      .sheet-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+      .sheet-head h3{flex:1;margin:0;font-size:1.15rem}
+      .x-btn{
+        width:40px;height:40px;border-radius:11px;border:1px solid var(--line);
+        background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;
+      }
+      .seg{display:flex;gap:8px;margin:12px 0}
+      .seg button{
+        flex:1;min-height:52px;border-radius:12px;border:1.5px solid var(--line);
+        background:var(--surface);color:var(--ink);font-weight:600;font-size:.95rem;padding:8px 4px;
+      }
+      .seg button.sel-order{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+      .seg button.sel-no{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+      .seg button.sel-closed{border-color:var(--closed);background:var(--closed-soft);color:var(--closed)}
+      .prod-row{
+        display:flex;align-items:center;gap:10px;background:var(--surface);
+        border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:8px;
+      }
+      .prod-info{flex:1;min-width:0}
+      .prod-name{font-weight:600;font-size:.95rem}
+      .prod-price{color:var(--muted);font-size:.8rem}
+      .stepper{display:flex;align-items:center;gap:2px;flex:none}
+      .stepper button{
+        width:40px;height:40px;border-radius:11px;border:1px solid var(--line);
+        background:var(--surface2);color:var(--ink);font-size:1.15rem;font-weight:700;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .stepper .qv{min-width:34px;text-align:center;font-weight:700;font-size:1.05rem}
+      .totals{
+        background:var(--surface);border:1px solid var(--line);border-radius:13px;
+        padding:13px 14px;margin:12px 0;font-size:.97rem;
+      }
+      .totals .row{display:flex;justify-content:space-between;padding:4px 0}
+      .totals .row.grand{font-weight:700;font-size:1.08rem;border-top:1px dashed var(--line);margin-top:6px;padding-top:10px}
+      .totals .due{color:var(--bad);font-weight:700}
+      select.text-input{appearance:auto}
+      textarea.text-input{min-height:74px;resize:vertical}
+      .mb{margin-bottom:12px}
+      .toast{
+        position:fixed;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+        background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;
+        font-size:.92rem;font-weight:600;z-index:80;display:none;box-shadow:var(--shadow);
+        max-width:92vw;text-align:center;
+      }
+      .toast.show{display:block}
+      .hidden{display:none !important}
+    </style>
+  </head>
+  <body>
+
+    <!-- ================= Login ================= -->
+    <div id="loginView" class="login-wrap">
+      <div class="brand-head">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a3.5 3.5 0 1 1 0 7h-1"/><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z"/><path d="M7 3.5c0 1 .8 1.2.8 2.2M11 3.5c0 1 .8 1.2.8 2.2"/></svg>
+        </div>
+        <h1>تطبيق المندوب</h1>
+        <p>خطّك اليومي: زيارات، طلبات، تحصيل ومصروفات</p>
+      </div>
+
+      <div class="card">
+        <h2>تسجيل الدخول</h2>
+        <span class="field-label" id="repPickLabel">اختر اسمك</span>
+        <div class="rep-grid" id="repGrid" role="group" aria-labelledby="repPickLabel"></div>
+        <label class="field-label" for="codeInput">كود الدخول (٤ أرقام)</label>
+        <input id="codeInput" class="text-input code-input" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••" />
+        <div class="err" id="loginErr"></div>
+        <div style="height:14px"></div>
+        <button class="btn btn-primary" id="loginBtn">دخول</button>
+      </div>
+
+      <div class="card">
+        <h2>رابط الربط مع الشيت <span class="conn-dot conn-off" id="connDot"></span></h2>
+        <label class="field-label" for="urlInput">رابط تطبيق Google Apps Script</label>
+        <input id="urlInput" class="text-input" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/…" autocomplete="off" />
+        <p class="hint">
+          الصق الرابط هنا مرة واحدة — بيتحفظ على الجهاز ده بس.
+          من غير الرابط التطبيق بيشتغل عادي بالبيانات المحلية، وزياراتك ومصروفاتك بتتخزن على الجهاز
+          وتتبعت لوحدها أول ما الرابط يتحط أو النت يرجع.
+        </p>
+      </div>
+    </div>
+
+    <!-- ================= App ================= -->
+    <div id="appView" class="app hidden">
+      <header class="topbar">
+        <div class="top-row">
+          <div class="avatar" id="avatarEl">م</div>
+          <div class="top-who">
+            <div class="nm" id="repNameEl">—</div>
+            <div class="rt" id="repRouteEl">—</div>
+          </div>
+          <button class="icon-btn" id="settingsBtn" aria-label="إعدادات الربط">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          <button class="icon-btn" id="logoutBtn" aria-label="تسجيل الخروج">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+          </button>
+        </div>
+        <div class="top-stats">
+          <div class="tstat"><b id="stVisits">٠</b><span>زيارات اليوم</span></div>
+          <div class="tstat"><b id="stSales">٠</b><span>مبيعات (ج)</span></div>
+          <div class="tstat"><b id="stCollected">٠</b><span>تحصيل (ج)</span></div>
+        </div>
+        <button class="sync-pill" id="syncPill"><span class="dot"></span><span id="syncTxt">متزامن</span></button>
+      </header>
+
+      <main>
+        <!-- Route tab -->
+        <section class="tab-page active" id="page-route">
+          <h2 class="sec-title" id="routeTitle">محلات اليوم</h2>
+          <div id="shopList"></div>
+        </section>
+
+        <!-- Expenses tab -->
+        <section class="tab-page" id="page-expenses">
+          <h2 class="sec-title">مصروفات اليوم</h2>
+          <div class="sum-grid">
+            <div class="sum-cell hl"><b id="expTotal">٠</b><span>إجمالي مصروفات اليوم (ج)</span></div>
+            <div class="sum-cell"><b id="expCount">٠</b><span>عدد المصروفات</span></div>
+          </div>
+          <button class="btn btn-primary btn-block mb" id="addExpenseBtn">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            تسجيل مصروف
+          </button>
+          <div id="expenseList"></div>
+        </section>
+
+        <!-- My day tab -->
+        <section class="tab-page" id="page-day">
+          <h2 class="sec-title">ملخص يومي</h2>
+          <div class="sum-grid">
+            <div class="sum-cell"><b id="dVisits">٠</b><span>زيارات</span></div>
+            <div class="sum-cell"><b id="dOrders">٠</b><span>طلبات</span></div>
+            <div class="sum-cell"><b id="dSales">٠</b><span>مبيعات (ج)</span></div>
+            <div class="sum-cell"><b id="dCollected">٠</b><span>تحصيل (ج)</span></div>
+            <div class="sum-cell"><b id="dDue">٠</b><span>آجل على المحلات (ج)</span></div>
+            <div class="sum-cell"><b id="dExpenses">٠</b><span>مصروفات (ج)</span></div>
+          </div>
+          <div class="sum-cell hl" style="margin-bottom:14px"><b id="dNet">٠</b><span>صافي التحصيل بعد المصروفات (ج)</span></div>
+          <h2 class="sec-title">سجل اليوم</h2>
+          <div id="dayLog"></div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="التنقل الرئيسي">
+        <div class="inner">
+          <button class="nav-btn active" data-tab="route">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            المحلات
+          </button>
+          <button class="nav-btn" data-tab="expenses">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+            المصروفات
+          </button>
+          <button class="nav-btn" data-tab="day">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            يومي
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- ================= Visit sheet ================= -->
+    <div class="overlay" id="visitOverlay" role="dialog" aria-modal="true" aria-labelledby="visitTitle">
+      <div class="sheet">
+        <div class="sheet-head">
+          <h3 id="visitTitle">تسجيل زيارة</h3>
+          <button class="x-btn" data-close="visitOverlay" aria-label="إغلاق">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <p class="hint" id="visitWhen"></p>
+        <div class="seg" role="group" aria-label="نتيجة الزيارة">
+          <button type="button" data-result="order">عمل طلب</button>
+          <button type="button" data-result="no">لم يشترِ</button>
+          <button type="button" data-result="closed">المحل مغلق</button>
+        </div>
+
+        <div id="orderBlock" class="hidden">
+          <span class="field-label">الأصناف والكميات</span>
+          <div id="prodList"></div>
+          <div class="totals">
+            <div class="row"><span>إجمالي الطلب</span><b id="ordTotal">٠ ج</b></div>
+          </div>
+          <div class="mb">
+            <label class="field-label" for="collectedInput">المبلغ المحصّل كاش (ج)</label>
+            <input id="collectedInput" class="text-input" type="number" inputmode="decimal" min="0" placeholder="٠" />
+          </div>
+          <div class="totals" style="margin-top:0">
+            <div class="row grand"><span>الباقي آجل على المحل</span><span class="due" id="ordDue">٠ ج</span></div>
+          </div>
+        </div>
+
+        <div id="noBlock" class="hidden">
+          <div class="mb">
+            <label class="field-label" for="reasonSelect">سبب عدم الشراء</label>
+            <select id="reasonSelect" class="text-input">
+              <option value="عنده مخزون كافي">عنده مخزون كافي</option>
+              <option value="السعر مرتفع">السعر مرتفع</option>
+              <option value="المسؤول غير موجود">المسؤول غير موجود</option>
+              <option value="طلب يرجع وقت تاني">طلب يرجع وقت تاني</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb">
+          <label class="field-label" for="visitNotes">ملحوظات (اختياري)</label>
+          <textarea id="visitNotes" class="text-input" placeholder="أي تفاصيل عن الزيارة…"></textarea>
+        </div>
+        <div class="err" id="visitErr"></div>
+        <div style="height:10px"></div>
+        <button class="btn btn-primary" id="saveVisitBtn">حفظ الزيارة</button>
+      </div>
+    </div>
+
+    <!-- ================= Expense sheet ================= -->
+    <div class="overlay" id="expenseOverlay" role="dialog" aria-modal="true" aria-labelledby="expenseTitle">
+      <div class="sheet">
+        <div class="sheet-head">
+          <h3 id="expenseTitle">تسجيل مصروف</h3>
+          <button class="x-btn" data-close="expenseOverlay" aria-label="إغلاق">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="mb">
+          <label class="field-label" for="expCategory">نوع المصروف</label>
+          <select id="expCategory" class="text-input"></select>
+        </div>
+        <div class="mb">
+          <label class="field-label" for="expAmount">المبلغ (ج)</label>
+          <input id="expAmount" class="text-input" type="number" inputmode="decimal" min="0" placeholder="٠" />
+        </div>
+        <div class="mb">
+          <label class="field-label" for="expNote">ملحوظة (اختياري)</label>
+          <textarea id="expNote" class="text-input" placeholder="مثال: عطل في العربية على الطريق…"></textarea>
+        </div>
+        <div class="err" id="expErr"></div>
+        <div style="height:10px"></div>
+        <button class="btn btn-primary" id="saveExpenseBtn">حفظ المصروف</button>
+      </div>
+    </div>
+
+    <!-- ================= Settings sheet ================= -->
+    <div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="sheet">
+        <div class="sheet-head">
+          <h3 id="settingsTitle">إعدادات الربط</h3>
+          <button class="x-btn" data-close="settingsOverlay" aria-label="إغلاق">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="mb">
+          <label class="field-label" for="urlInput2">رابط تطبيق Google Apps Script</label>
+          <input id="urlInput2" class="text-input" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/…" autocomplete="off" />
+          <p class="hint">الرابط بيتحفظ على الجهاز ده بس. أول ما يتحط، أي زيارات أو مصروفات مستنية بتتبعت لوحدها.</p>
+        </div>
+        <div class="totals">
+          <div class="row"><span>سجلات في انتظار الإرسال</span><b id="queueCount">٠</b></div>
+          <div class="row"><span>حالة الاتصال</span><b id="netState">—</b></div>
+        </div>
+        <button class="btn btn-primary btn-block mb" id="saveUrlBtn">حفظ الرابط والمزامنة</button>
+        <button class="btn btn-ghost btn-block" id="syncNowBtn">مزامنة دلوقتي</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    (function(){
+      "use strict";
+
+      /* ============ Local fallback data (used when no sheet link is set) ============ */
+      var LOCAL_REPS = [
+        { name:"أحمد سامي",    code:"1234", route:"خط مدينة نصر",
+          shops:["سوبر ماركت النور","بقالة الأمانة","كشك السعادة","ماركت المدينة"] },
+        { name:"كريم حسن",     code:"2345", route:"خط مصر الجديدة",
+          shops:["سوبر ماركت الشروق","بقالة الورد","محل الحاج علي للبقالة"] },
+        { name:"عمر فاروق",    code:"3456", route:"خط المعادي",
+          shops:["ماركت النيل","بقالة البركة","كشك الأصدقاء"] },
+        { name:"سامح إبراهيم", code:"4567", route:"خط شبرا",
+          shops:["سوبر ماركت الفرج","بقالة الحمد"] }
+      ];
+      var LOCAL_PRODUCTS = [
+        {name:"بن محوج فاتح ٢٥٠جم", price:145},
+        {name:"بن محوج غامق ٢٥٠جم", price:145},
+        {name:"بن محوج فاتح ٥٠٠جم", price:275},
+        {name:"بن سادة ٢٥٠جم", price:130},
+        {name:"توليفة خاصة بالهيل ٢٥٠جم", price:185},
+        {name:"توليفة اسبريسو ٥٠٠جم", price:320},
+        {name:"بن محوج سائب بالكيلو", price:540},
+        {name:"بن سادة سائب بالكيلو", price:480},
+        {name:"قهوة عربي بالهيل ٢٠٠جم", price:160},
+        {name:"بن أخضر حب بالكيلو", price:390},
+        {name:"بن محوج وسط ١٢٥جم", price:78},
+        {name:"توليفة فرنساوي بالبندق ٢٥٠جم", price:195}
+      ];
+      /* Only categories visible to the rep. Hidden dashboard categories are never listed here. */
+      var LOCAL_CATEGORIES = [
+        "عطل وصيانة عربية",
+        "وقود — بنزين / سولار",
+        "كاوتش / بطارية",
+        "زيت وفلاتر",
+        "نقل بديل / مواصلات",
+        "مصروف آخر"
+      ];
+
+      /* ============ Storage keys ============ */
+      var K_URL="repapp.scriptUrl", K_CODE="repapp.code", K_QUEUE="repapp.queue", K_LOG="repapp.log";
+      /* رابط الربط الافتراضي المدمج — بيُستخدم تلقائيًا لو مفيش رابط محفوظ على الجهاز، وأي رابط محفوظ يدويًا له الأولوية */
+      var DEFAULT_URL="https://script.google.com/macros/s/AKfycbzQkHQt7P-60wPv1zZGRMZzMxmnxrNcwqbQR35Br0gYak4NDPgSJNIKOMvoNMmvMFVO/exec";
+
+      function lsGet(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+      function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+      function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+      function uid(){
+        return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,10)+Math.floor(Math.random()*1e6).toString(36);
+      }
+      function cairoNow(){
+        var d=new Date();
+        var date=new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Cairo",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
+        var time=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Cairo",hour:"2-digit",minute:"2-digit",hour12:false}).format(d);
+        return {date:date, time:time};
+      }
+      function todayStr(){ return cairoNow().date; }
+      function fmt(n){
+        n=Math.round((+n||0)*100)/100;
+        return n.toLocaleString("ar-EG-u-nu-latn");
+      }
+      function esc(s){
+        return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+          return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+        });
+      }
+      function $(id){ return document.getElementById(id); }
+
+      /* ============ State ============ */
+      var state = {
+        code:null,
+        user:null,          /* {name, route} */
+        products:LOCAL_PRODUCTS.slice(),
+        categories:LOCAL_CATEGORIES.slice(),
+        shops:[],
+        queue: lsGet(K_QUEUE) || [],
+        log: lsGet(K_LOG) || [],   /* today's own records for display: {kind:'visit'|'expense', id, ...} */
+        visitShop:null,
+        visitResult:"order",
+        qtys:{}
+      };
+
+      function saveQueue(){ lsSet(K_QUEUE, state.queue); updateSyncUI(); }
+      function saveLog(){ lsSet(K_LOG, state.log); }
+
+      /* ============ Apps Script API ============ */
+      function scriptUrl(){ var u=lsGet(K_URL); return (typeof u==="string"&&u)?u:DEFAULT_URL; }
+
+      function api(payload, timeoutMs){
+        var url=scriptUrl();
+        if(!url) return Promise.reject(new Error("no-url"));
+        var ctrl=("AbortController" in window)?new AbortController():null;
+        var timer=null;
+        if(ctrl){ timer=setTimeout(function(){ ctrl.abort(); }, timeoutMs||12000); }
+        return fetch(url,{
+          method:"POST",
+          headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify(payload),
+          signal: ctrl?ctrl.signal:undefined
+        }).then(function(res){
+          if(timer) clearTimeout(timer);
+          return res.text();
+        }).then(function(txt){
+          try{ return JSON.parse(txt); }catch(e){ return {ok:true, raw:txt}; }
+        }).catch(function(err){
+          if(timer) clearTimeout(timer);
+          throw err;
+        });
+      }
+
+      function normalizeConfig(cfg, fallbackRep){
+        var user = cfg.user || (fallbackRep?{name:fallbackRep.name, route:fallbackRep.route}:null);
+        var products = LOCAL_PRODUCTS, categories = LOCAL_CATEGORIES, shops = fallbackRep?fallbackRep.shops:[];
+        if(Array.isArray(cfg.products) && cfg.products.length){
+          products = cfg.products.map(function(p){
+            if(typeof p==="string") return {name:p, price:0};
+            return {name:p.name||p.title||"", price:+p.price||0};
+          }).filter(function(p){ return p.name; });
+          if(!products.length) products=LOCAL_PRODUCTS;
+        }
+        if(Array.isArray(cfg.categories) && cfg.categories.length){
+          categories = cfg.categories.filter(function(c){
+            /* قائمة «نوع المصروف» لازم يبقى فيها تصنيفات المصروفات بس —
+               أي تصنيف نطاقه معروف ومش expense (أصناف/عام) ما يدخلش هنا. */
+            if(c && typeof c==="object" && c.scope) return c.scope==="expense";
+            return true;
+          }).map(function(c){
+            return (typeof c==="string")?c:(c.name||c.title||"");
+          }).filter(Boolean);
+          if(!categories.length) categories=LOCAL_CATEGORIES;
+        }
+        if(Array.isArray(cfg.shops) && cfg.shops.length){
+          shops = cfg.shops.map(function(s){
+            return (typeof s==="string")?s:(s.name||s.title||"");
+          }).filter(Boolean);
+          if(!shops.length && fallbackRep) shops=fallbackRep.shops;
+        }
+        return {user:user, products:products, categories:categories, shops:shops};
+      }
+
+      /* ============ Queue / sync ============ */
+      var syncing=false;
+      function enqueue(kind, payload){
+        state.queue.push({kind:kind, payload:payload});
+        saveQueue();
+      }
+      function markSent(id){
+        for(var i=0;i<state.log.length;i++){ if(state.log[i].id===id) state.log[i].sent=true; }
+        saveLog();
+      }
+      function flushQueue(){
+        if(syncing || !scriptUrl() || !state.queue.length) { updateSyncUI(); return Promise.resolve(); }
+        if(!navigator.onLine){ updateSyncUI(); return Promise.resolve(); }
+        syncing=true; updateSyncUI();
+        var item=state.queue[0];
+        var payload = (item.kind==="visit")
+          ? {action:"postVisit", code:state.code||"", visit:item.payload}
+          : {action:"postExpense", code:state.code||"", expense:item.payload};
+        return api(payload, 12000).then(function(){
+          state.queue.shift(); saveQueue(); markSent(item.payload.id);
+          syncing=false;
+          return flushQueue();
+        }).catch(function(){
+          syncing=false; updateSyncUI();
+        });
+      }
+      function updateSyncUI(){
+        var n=state.queue.length;
+        var pill=$("syncPill"), txt=$("syncTxt");
+        if(pill&&txt){
+          if(n>0){ pill.classList.remove("synced"); txt.textContent="في انتظار الإرسال: "+fmt(n)+" — اضغط للمزامنة"; }
+          else { pill.classList.add("synced"); txt.textContent= scriptUrl()? "متزامن مع الشيت" : "وضع محلي — الصق رابط الربط للمزامنة"; }
+        }
+        var qc=$("queueCount"); if(qc) qc.textContent=fmt(n);
+        var ns=$("netState"); if(ns) ns.textContent= navigator.onLine? "متصل" : "غير متصل";
+        var dot=$("connDot");
+        if(dot){ dot.className="conn-dot "+(scriptUrl()?"conn-on":"conn-off"); }
+      }
+
+      /* ============ Toast ============ */
+      var toastTimer=null;
+      function toast(msg){
+        var t=$("toast"); t.textContent=msg; t.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer=setTimeout(function(){ t.classList.remove("show"); },2600);
+      }
+
+      /* ============ Geolocation (best effort) ============ */
+      function getLocation(){
+        return new Promise(function(resolve){
+          if(!("geolocation" in navigator)) return resolve("");
+          var done=false;
+          var timer=setTimeout(function(){ if(!done){ done=true; resolve(""); } }, 3500);
+          navigator.geolocation.getCurrentPosition(function(pos){
+            if(done) return; done=true; clearTimeout(timer);
+            resolve(pos.coords.latitude.toFixed(6)+","+pos.coords.longitude.toFixed(6));
+          }, function(){
+            if(done) return; done=true; clearTimeout(timer); resolve("");
+          }, {timeout:3000, maximumAge:120000});
+        });
+      }
+
+      /* ============ Login ============ */
+      var selectedRepCode=null;
+      function buildRepGrid(){
+        var g=$("repGrid"); g.innerHTML="";
+        LOCAL_REPS.forEach(function(r){
+          var b=document.createElement("button");
+          b.type="button"; b.className="rep-chip"; b.setAttribute("data-code", r.code);
+          b.innerHTML='<span class="rn">'+esc(r.name)+'</span><span class="rr">'+esc(r.route.replace("خط ",""))+'</span>';
+          b.addEventListener("click", function(){
+            selectedRepCode=r.code;
+            var chips=g.querySelectorAll(".rep-chip");
+            for(var i=0;i<chips.length;i++) chips[i].classList.toggle("sel", chips[i]===b);
+            $("loginErr").classList.remove("show");
+          });
+          g.appendChild(b);
+        });
+      }
+      function localRepByCode(code){
+        for(var i=0;i<LOCAL_REPS.length;i++) if(LOCAL_REPS[i].code===code) return LOCAL_REPS[i];
+        return null;
+      }
+      function applyConfig(cfg, rep){
+        var norm=normalizeConfig(cfg||{}, rep);
+        state.user=norm.user; state.products=norm.products;
+        state.categories=norm.categories; state.shops=norm.shops;
+      }
+      function enterApp(){
+        $("loginView").classList.add("hidden");
+        $("appView").classList.remove("hidden");
+        $("avatarEl").textContent=(state.user&&state.user.name?state.user.name.trim().charAt(0):"م");
+        $("repNameEl").textContent=state.user?state.user.name:"";
+        $("repRouteEl").textContent=(state.user&&state.user.route?state.user.route:"")+" • "+cairoNow().date;
+        renderAll();
+        updateSyncUI();
+        flushQueue();
+        window.scrollTo(0,0);
+      }
+      function doLogin(){
+        var code=($("codeInput").value||"").trim();
+        var url=($("urlInput").value||"").trim();
+        if(url) lsSet(K_URL, url); else if(!scriptUrl()) lsDel(K_URL);
+        var err=$("loginErr");
+        err.classList.remove("show");
+        if(!code){ err.textContent="اكتب كود الدخول بتاعك."; err.classList.add("show"); return; }
+        if(selectedRepCode && selectedRepCode!==code){
+          err.textContent="الكود ده مش بتاع الاسم اللي اخترته — اختر اسمك الصح أو اكتب كودك.";
+          err.classList.add("show"); return;
+        }
+        var btn=$("loginBtn"); btn.disabled=true; btn.textContent="جاري الدخول…";
+        var rep=localRepByCode(code);
+        function finish(cfg, usedRep){
+          state.code=code; lsSet(K_CODE, code);
+          applyConfig(cfg, usedRep);
+          btn.disabled=false; btn.textContent="دخول";
+          enterApp();
+        }
+        if(scriptUrl()){
+          api({action:"login", code:code}, 10000).then(function(res){
+            if(res && (res.ok===false || res.error)){ throw new Error("bad-login"); }
+            return api({action:"getConfig", code:code}, 10000).then(function(cfg){
+              finish(cfg||{}, rep);
+            }).catch(function(){ finish({}, rep); });
+          }).catch(function(){
+            /* Sheet unreachable or code rejected there: fall back to local codes. */
+            if(rep){ finish({}, rep); }
+            else { btn.disabled=false; btn.textContent="دخول"; err.textContent="كود الدخول غير صحيح — راجع الكود وحاول تاني."; err.classList.add("show"); }
+          });
+        } else {
+          if(rep){ finish({}, rep); }
+          else { btn.disabled=false; btn.textContent="دخول"; err.textContent="كود الدخول غير صحيح — راجع الكود وحاول تاني."; err.classList.add("show"); }
+        }
+      }
+      function doLogout(){
+        state.code=null; state.user=null; state.shops=[];
+        lsDel(K_CODE);
+        $("codeInput").value="";
+        selectedRepCode=null;
+        var chips=$("repGrid").querySelectorAll(".rep-chip");
+        for(var i=0;i<chips.length;i++) chips[i].classList.remove("sel");
+        $("appView").classList.add("hidden");
+        $("loginView").classList.remove("hidden");
+        window.scrollTo(0,0);
+      }
+
+      /* ============ Rendering ============ */
+      function todayVisits(){ return state.log.filter(function(r){ return r.kind==="visit" && r.date===todayStr(); }); }
+      function todayExpenses(){ return state.log.filter(function(r){ return r.kind==="expense" && r.date===todayStr(); }); }
+      function visitForShop(name){
+        var vs=todayVisits();
+        for(var i=vs.length-1;i>=0;i--) if(vs[i].shopName===name) return vs[i];
+        return null;
+      }
+      var RESULT_TXT={order:"عمل طلب", no:"لم يشترِ", closed:"المحل مغلق"};
+      function renderShops(){
+        var list=$("shopList"); list.innerHTML="";
+        $("routeTitle").textContent="محلات اليوم — "+(state.user&&state.user.route?state.user.route.replace("خط ",""):"");
+        if(!state.shops.length){
+          list.innerHTML='<div class="empty">مفيش محلات في خطك النهاردة.</div>';
+          return;
+        }
+        state.shops.forEach(function(name){
+          var v=visitForShop(name);
+          var b=document.createElement("button");
+          b.type="button"; b.className="shop-card";
+          var badge, sub;
+          if(!v){ badge='<span class="badge badge-none">لسه ما اتزارتش</span>'; sub="اضغط لتسجيل الزيارة"; }
+          else if(v.result==="order"){ badge='<span class="badge badge-order">طلب • '+fmt(v.orderTotal)+' ج</span>'; sub="اتزارت الساعة "+esc(v.time); }
+          else if(v.result==="no"){ badge='<span class="badge badge-no">لم يشترِ</span>'; sub="اتزارت الساعة "+esc(v.time); }
+          else { badge='<span class="badge badge-closed">مغلق</span>'; sub="اتزارت الساعة "+esc(v.time); }
+          b.innerHTML=
+            '<span class="shop-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.7-5h14.6L21 9"/><path d="M4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg></span>'+
+            '<span class="shop-info"><span class="shop-name">'+esc(name)+'</span><span class="shop-sub" style="display:block">'+sub+'</span></span>'+badge;
+          b.addEventListener("click", function(){ openVisit(name); });
+          list.appendChild(b);
+        });
+      }
+      function renderExpenses(){
+        var exps=todayExpenses();
+        var total=exps.reduce(function(s,e){ return s+(+e.amount||0); },0);
+        $("expTotal").textContent=fmt(total);
+        $("expCount").textContent=fmt(exps.length);
+        var list=$("expenseList"); list.innerHTML="";
+        if(!exps.length){ list.innerHTML='<div class="empty">مفيش مصروفات متسجلة النهاردة.<br>لو حصل عطل في العربية أو أي مصروف، سجّله من زر «تسجيل مصروف».</div>'; return; }
+        exps.slice().reverse().forEach(function(e){
+          var d=document.createElement("div"); d.className="rec";
+          d.innerHTML=
+            '<div class="rec-top"><span class="rec-title">'+esc(e.category)+'</span>'+
+            '<span class="rec-amt">'+fmt(e.amount)+' ج</span>'+
+            '<span class="sent-tag '+(e.sent?"sent-ok":"sent-wait")+'">'+(e.sent?"اتبعت":"في الانتظار")+'</span></div>'+
+            '<div class="rec-meta">الساعة '+esc(e.time)+(e.note?' • '+esc(e.note):'')+'</div>';
+          list.appendChild(d);
+        });
+      }
+      function renderDay(){
+        var vs=todayVisits(), exps=todayExpenses();
+        var orders=vs.filter(function(v){ return v.result==="order"; });
+        var sales=orders.reduce(function(s,v){ return s+(+v.orderTotal||0); },0);
+        var coll=orders.reduce(function(s,v){ return s+(+v.collected||0); },0);
+        var expTotal=exps.reduce(function(s,e){ return s+(+e.amount||0); },0);
+        $("stVisits").textContent=fmt(vs.length);
+        $("stSales").textContent=fmt(sales);
+        $("stCollected").textContent=fmt(coll);
+        $("dVisits").textContent=fmt(vs.length);
+        $("dOrders").textContent=fmt(orders.length);
+        $("dSales").textContent=fmt(sales);
+        $("dCollected").textContent=fmt(coll);
+        $("dDue").textContent=fmt(sales-coll);
+        $("dExpenses").textContent=fmt(expTotal);
+        $("dNet").textContent=fmt(coll-expTotal);
+        var all=state.log.filter(function(r){ return r.date===todayStr(); }).slice().reverse();
+        var list=$("dayLog"); list.innerHTML="";
+        if(!all.length){ list.innerHTML='<div class="empty">لسه مفيش حاجة اتسجلت النهاردة.</div>'; return; }
+        all.forEach(function(r){
+          var d=document.createElement("div"); d.className="rec";
+          if(r.kind==="visit"){
+            var meta="زيارة • "+RESULT_TXT[r.result];
+            if(r.result==="order") meta+=" • تحصيل "+fmt(r.collected)+" ج"+" • آجل "+fmt((+r.orderTotal||0)-(+r.collected||0))+" ج";
+            if(r.result==="no"&&r.reason) meta+=" • "+r.reason;
+            if(r.notes) meta+=" • "+r.notes;
+            d.innerHTML='<div class="rec-top"><span class="rec-title">'+esc(r.shopName)+'</span>'+
+              (r.result==="order"?'<span class="rec-amt">'+fmt(r.orderTotal)+' ج</span>':'')+
+              '<span class="sent-tag '+(r.sent?"sent-ok":"sent-wait")+'">'+(r.sent?"اتبعت":"في الانتظار")+'</span></div>'+
+              '<div class="rec-meta">الساعة '+esc(r.time)+' • '+esc(meta)+'</div>';
+          } else {
+            d.innerHTML='<div class="rec-top"><span class="rec-title">مصروف: '+esc(r.category)+'</span>'+
+              '<span class="rec-amt">'+fmt(r.amount)+' ج</span>'+
+              '<span class="sent-tag '+(r.sent?"sent-ok":"sent-wait")+'">'+(r.sent?"اتبعت":"في الانتظار")+'</span></div>'+
+              '<div class="rec-meta">الساعة '+esc(r.time)+(r.note?' • '+esc(r.note):'')+'</div>';
+          }
+          list.appendChild(d);
+        });
+      }
+      function renderAll(){ renderShops(); renderExpenses(); renderDay(); }
+
+      /* ============ Visit sheet ============ */
+      function openOverlay(id){ $(id).classList.add("open"); }
+      function closeOverlay(id){ $(id).classList.remove("open"); }
+      function setVisitResult(r){
+        state.visitResult=r;
+        var btns=document.querySelectorAll("#visitOverlay .seg button");
+        for(var i=0;i<btns.length;i++){
+          var on=btns[i].getAttribute("data-result")===r;
+          btns[i].className=on?("sel-"+r):"";
+        }
+        $("orderBlock").classList.toggle("hidden", r!=="order");
+        $("noBlock").classList.toggle("hidden", r!=="no");
+        $("visitErr").classList.remove("show");
+      }
+      function buildProdList(){
+        var list=$("prodList"); list.innerHTML="";
+        state.qtys={};
+        state.products.forEach(function(p, idx){
+          var row=document.createElement("div"); row.className="prod-row";
+          row.innerHTML=
+            '<div class="prod-info"><div class="prod-name">'+esc(p.name)+'</div><div class="prod-price">'+fmt(p.price)+' ج</div></div>'+
+            '<div class="stepper"><button type="button" aria-label="تقليل">−</button><span class="qv">٠</span><button type="button" aria-label="زيادة">+</button></div>';
+          var qv=row.querySelector(".qv");
+          var minus=row.querySelectorAll(".stepper button")[0];
+          var plus=row.querySelectorAll(".stepper button")[1];
+          function upd(){ qv.textContent=fmt(state.qtys[idx]||0); updateOrderTotals(); }
+          minus.addEventListener("click", function(){ state.qtys[idx]=Math.max(0,(state.qtys[idx]||0)-1); upd(); });
+          plus.addEventListener("click", function(){ state.qtys[idx]=(state.qtys[idx]||0)+1; upd(); });
+          list.appendChild(row);
+        });
+        updateOrderTotals();
+      }
+      function orderTotalCalc(){
+        var t=0;
+        state.products.forEach(function(p, idx){ t+=(state.qtys[idx]||0)*(+p.price||0); });
+        return t;
+      }
+      function updateOrderTotals(){
+        var t=orderTotalCalc();
+        var coll=parseFloat($("collectedInput").value)||0;
+        $("ordTotal").textContent=fmt(t)+" ج";
+        $("ordDue").textContent=fmt(Math.max(0,t-coll))+" ج";
+      }
+      function openVisit(shop){
+        state.visitShop=shop;
+        $("visitTitle").textContent=shop;
+        var n=cairoNow();
+        $("visitWhen").textContent="هتتسجل بتاريخ "+n.date+" الساعة "+n.time+" — والموقع بيتسجل تلقائيًا لو متاح.";
+        $("collectedInput").value="";
+        $("visitNotes").value="";
+        $("reasonSelect").selectedIndex=0;
+        buildProdList();
+        setVisitResult("order");
+        openOverlay("visitOverlay");
+      }
+      function saveVisit(){
+        var shop=state.visitShop; if(!shop) return;
+        var err=$("visitErr"); err.classList.remove("show");
+        var result=state.visitResult;
+        var items=[], total=0, collected=0, reason="";
+        if(result==="order"){
+          state.products.forEach(function(p, idx){
+            var q=state.qtys[idx]||0;
+            if(q>0){ items.push({name:p.name, qty:q, price:+p.price||0}); total+=q*(+p.price||0); }
+          });
+          if(!items.length){ err.textContent="اختر صنف واحد على الأقل وحدد كميته."; err.classList.add("show"); return; }
+          collected=parseFloat($("collectedInput").value)||0;
+          if(collected<0) collected=0;
+          if(collected>total){ err.textContent="المبلغ المحصّل أكبر من إجمالي الطلب."; err.classList.add("show"); return; }
+        }
+        if(result==="no") reason=$("reasonSelect").value;
+        var notes=$("visitNotes").value.trim();
+        var btn=$("saveVisitBtn"); btn.disabled=true; btn.textContent="جاري الحفظ…";
+        getLocation().then(function(loc){
+          var n=cairoNow();
+          var visit={
+            id:uid(), date:n.date, time:n.time, shopName:shop, result:result,
+            items:items, orderTotal:total, collected:collected,
+            reason:reason, notes:notes, location:loc
+          };
+          var rec={kind:"visit", sent:false};
+          for(var k in visit) rec[k]=visit[k];
+          state.log.push(rec); saveLog();
+          enqueue("visit", visit);
+          btn.disabled=false; btn.textContent="حفظ الزيارة";
+          closeOverlay("visitOverlay");
+          renderAll();
+          toast("اتسجلت زيارة "+shop);
+          flushQueue();
+        });
+      }
+
+      /* ============ Expense sheet ============ */
+      function buildCategorySelect(){
+        var sel=$("expCategory"); sel.innerHTML="";
+        state.categories.forEach(function(c){
+          var o=document.createElement("option"); o.value=c; o.textContent=c; sel.appendChild(o);
+        });
+      }
+      function saveExpense(){
+        var err=$("expErr"); err.classList.remove("show");
+        var amount=parseFloat($("expAmount").value);
+        if(!amount || amount<=0){ err.textContent="اكتب مبلغ المصروف."; err.classList.add("show"); return; }
+        var category=$("expCategory").value;
+        var note=$("expNote").value.trim();
+        var btn=$("saveExpenseBtn"); btn.disabled=true; btn.textContent="جاري الحفظ…";
+        getLocation().then(function(loc){
+          var n=cairoNow();
+          var expense={ id:uid(), date:n.date, time:n.time, category:category, amount:amount, note:note, location:loc };
+          var rec={kind:"expense", sent:false};
+          for(var k in expense) rec[k]=expense[k];
+          state.log.push(rec); saveLog();
+          enqueue("expense", expense);
+          btn.disabled=false; btn.textContent="حفظ المصروف";
+          $("expAmount").value=""; $("expNote").value="";
+          closeOverlay("expenseOverlay");
+          renderAll();
+          toast("اتسجل المصروف: "+category+" — "+fmt(amount)+" ج");
+          flushQueue();
+        });
+      }
+
+      /* ============ Tabs ============ */
+      function switchTab(name){
+        var btns=document.querySelectorAll(".nav-btn");
+        for(var i=0;i<btns.length;i++) btns[i].classList.toggle("active", btns[i].getAttribute("data-tab")===name);
+        var pages=["route","expenses","day"];
+        pages.forEach(function(p){ $("page-"+p).classList.toggle("active", p===name); });
+        window.scrollTo(0,0);
+      }
+
+      /* ============ Wiring ============ */
+      function init(){
+        buildRepGrid();
+        var savedUrl=scriptUrl();
+        if(savedUrl){ $("urlInput").value=savedUrl; $("urlInput2").value=savedUrl; }
+        $("urlInput").addEventListener("change", function(){
+          var u=$("urlInput").value.trim();
+          if(u){ lsSet(K_URL,u); $("urlInput2").value=u; } else lsDel(K_URL);
+          updateSyncUI(); flushQueue();
+        });
+        $("loginBtn").addEventListener("click", doLogin);
+        $("codeInput").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+        $("logoutBtn").addEventListener("click", doLogout);
+        $("settingsBtn").addEventListener("click", function(){
+          $("urlInput2").value=scriptUrl();
+          updateSyncUI(); openOverlay("settingsOverlay");
+        });
+        $("syncPill").addEventListener("click", function(){
+          if(state.queue.length && scriptUrl()){ flushQueue(); toast("جاري المزامنة…"); }
+          else { $("urlInput2").value=scriptUrl(); updateSyncUI(); openOverlay("settingsOverlay"); }
+        });
+        $("saveUrlBtn").addEventListener("click", function(){
+          var u=$("urlInput2").value.trim();
+          if(u){ lsSet(K_URL,u); $("urlInput").value=u; } else lsDel(K_URL);
+          updateSyncUI(); closeOverlay("settingsOverlay");
+          toast(u?"اتحفظ الرابط — جاري إرسال اللي في الانتظار":"اتشال الرابط — الشغل هيتخزن على الجهاز");
+          flushQueue();
+        });
+        $("syncNowBtn").addEventListener("click", function(){
+          if(!scriptUrl()){ toast("الصق رابط الربط الأول عشان المزامنة تشتغل"); return; }
+          flushQueue(); toast("جاري المزامنة…");
+        });
+        var navBtns=document.querySelectorAll(".nav-btn");
+        for(var i=0;i<navBtns.length;i++){
+          navBtns[i].addEventListener("click", function(){ switchTab(this.getAttribute("data-tab")); });
+        }
+        var segBtns=document.querySelectorAll("#visitOverlay .seg button");
+        for(var j=0;j<segBtns.length;j++){
+          segBtns[j].addEventListener("click", function(){ setVisitResult(this.getAttribute("data-result")); });
+        }
+        $("collectedInput").addEventListener("input", updateOrderTotals);
+        $("saveVisitBtn").addEventListener("click", saveVisit);
+        $("addExpenseBtn").addEventListener("click", function(){
+          buildCategorySelect(); $("expErr").classList.remove("show"); openOverlay("expenseOverlay");
+        });
+        $("saveExpenseBtn").addEventListener("click", saveExpense);
+        var closers=document.querySelectorAll("[data-close]");
+        for(var c=0;c<closers.length;c++){
+          closers[c].addEventListener("click", function(){ closeOverlay(this.getAttribute("data-close")); });
+        }
+        var overlays=document.querySelectorAll(".overlay");
+        for(var o=0;o<overlays.length;o++){
+          overlays[o].addEventListener("click", function(e){ if(e.target===this) this.classList.remove("open"); });
+        }
+        window.addEventListener("online", function(){ updateSyncUI(); flushQueue(); });
+        window.addEventListener("offline", updateSyncUI);
+
+        /* Auto-login if a code is saved on this device */
+        var savedCode=lsGet(K_CODE);
+        if(savedCode && typeof savedCode==="string"){
+          var rep=localRepByCode(savedCode);
+          state.code=savedCode;
+          if(scriptUrl()){
+            api({action:"getConfig", code:savedCode}, 8000).then(function(cfg){
+              applyConfig(cfg||{}, rep); enterApp();
+            }).catch(function(){ applyConfig({}, rep); enterApp(); });
+          } else if(rep){ applyConfig({}, rep); enterApp(); }
+        }
+        updateSyncUI();
+      }
+      document.addEventListener("DOMContentLoaded", init);
+    })();
+    </script>
+  </body>
+</html>
