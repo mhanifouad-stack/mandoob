@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:," />
+    <title>نموذج زيارات المندوب</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#f5efe1;
+        --card:#ffffff;
+        --brown:#6f4e37;
+        --brown-dark:#54382a;
+        --chip:#f7f1e3;
+        --chip-border:#d9c8a9;
+        --ink:#3e2f23;
+        --muted:#8a7a63;
+        --danger:#b3402e;
+        --ok:#3f7d3a;
+        --radius:18px;
+      }
+      *{ box-sizing:border-box; }
+      html,body{ margin:0; padding:0; }
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+        -webkit-font-smoothing:antialiased;
+        padding:14px 12px 40px;
+      }
+      button, input, select, textarea{ font-family:inherit; }
+      button{ cursor:pointer; }
+      .wrap{ max-width:640px; margin:0 auto; }
+
+      .card{
+        background:var(--card);
+        border-radius:var(--radius);
+        box-shadow:0 2px 14px rgba(111,78,55,.10);
+        padding:18px 16px 20px;
+      }
+
+      /* ---------- شاشة الدخول ---------- */
+      .login-title{ font-size:22px; font-weight:800; color:var(--brown-dark); margin:4px 0 2px; text-align:center; }
+      .login-sub{ text-align:center; color:var(--muted); font-size:14px; margin:0 0 18px; }
+      .field{ margin-bottom:14px; }
+      .field label{ display:block; font-weight:700; font-size:14px; margin-bottom:6px; color:var(--brown-dark); }
+      .text-input, .text-area, .select-input{
+        width:100%; border:1.5px solid var(--chip-border); border-radius:12px;
+        background:#fffdf8; color:var(--ink); font-size:16px; padding:10px 12px; min-height:44px;
+        outline:none;
+      }
+      .text-input:focus, .text-area:focus, .select-input:focus{ border-color:var(--brown); }
+      .text-area{ min-height:88px; resize:vertical; }
+      .url-input{ font-size:12.5px; direction:ltr; text-align:left; }
+      .btn{
+        border:none; border-radius:12px; font-weight:800; font-size:16px;
+        min-height:48px; padding:10px 18px;
+      }
+      .btn-brown{ background:var(--brown); color:#fff; width:100%; }
+      .btn-brown:active{ background:var(--brown-dark); }
+      .btn-brown:disabled{ opacity:.55; cursor:default; }
+      .btn-outline{
+        background:#fff; color:var(--brown); border:1.5px solid var(--brown); width:100%;
+      }
+      .btn-outline.done{ background:var(--chip); }
+      .msg{ border-radius:10px; padding:10px 12px; font-size:14px; font-weight:600; margin:12px 0 0; display:none; }
+      .msg.err{ display:block; background:#fbeae6; color:var(--danger); border:1px solid #eec5bb; }
+      .msg.ok{ display:block; background:#e9f4e4; color:var(--ok); border:1px solid #c4dfba; }
+
+      /* ---------- التبويبات ---------- */
+      .userbar{
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        margin-bottom:12px; flex-wrap:wrap;
+      }
+      .userbar .who{ font-weight:800; color:var(--brown-dark); font-size:16px; }
+      .userbar .who small{ display:block; font-weight:600; color:var(--muted); font-size:12.5px; }
+      .logout-btn{
+        background:#fff; border:1.5px solid var(--chip-border); color:var(--brown);
+        border-radius:10px; font-weight:700; font-size:13.5px; min-height:38px; padding:6px 14px;
+      }
+      .tabs{
+        display:flex; gap:6px; background:var(--chip); border:1px solid var(--chip-border);
+        border-radius:14px; padding:5px; margin-bottom:18px;
+      }
+      .tab-btn{
+        flex:1; border:none; background:transparent; color:var(--brown);
+        font-weight:800; font-size:15px; border-radius:10px; min-height:42px; padding:8px 4px;
+      }
+      .tab-btn.active{ background:var(--brown); color:#fff; }
+
+      /* ---------- النموذج ---------- */
+      .group{ margin-bottom:18px; }
+      .group-label{ font-weight:800; font-size:15px; color:var(--brown-dark); margin-bottom:8px; }
+      .group-label .opt{ font-weight:600; color:var(--muted); font-size:12.5px; }
+      .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+      .chip{
+        border:1.5px solid var(--chip-border); background:var(--chip); color:var(--brown);
+        border-radius:999px; font-weight:700; font-size:14.5px;
+        min-height:40px; padding:7px 16px;
+      }
+      .chip.selected{ background:var(--brown); border-color:var(--brown); color:#fff; }
+      .chip.circle{
+        width:48px; height:48px; min-height:48px; border-radius:50%; padding:0;
+        display:inline-flex; align-items:center; justify-content:center; font-size:15px;
+      }
+      .row2{ display:flex; gap:10px; }
+      .row2 .field{ flex:1; }
+      .hidden{ display:none !important; }
+
+      /* ---------- تعديل القوائم ---------- */
+      .admin-box{
+        margin-top:26px; border-top:2px dashed var(--chip-border); padding-top:18px;
+      }
+      .admin-box h3{ margin:0 0 4px; font-size:17px; font-weight:800; color:var(--brown-dark); }
+      .admin-box .hint{ color:var(--muted); font-size:13px; margin:0 0 14px; }
+      .list-section{ margin-bottom:18px; }
+      .list-section h4{ margin:0 0 8px; font-size:14.5px; font-weight:800; color:var(--brown); }
+      .item-row{
+        display:flex; align-items:center; gap:8px; background:var(--chip);
+        border:1px solid var(--chip-border); border-radius:10px;
+        padding:6px 8px 6px 12px; margin-bottom:6px; min-height:42px;
+      }
+      .item-row .nm{ flex:1; font-weight:700; font-size:14px; }
+      .item-row .pr{ color:var(--muted); font-size:12.5px; font-weight:600; }
+      .del-btn{
+        background:#fff; border:1.5px solid #e3b7ac; color:var(--danger);
+        border-radius:8px; font-weight:800; font-size:14px; width:38px; height:38px; flex:none;
+      }
+      .add-row{ display:flex; gap:8px; flex-wrap:wrap; }
+      .add-row .text-input{ flex:1; min-width:130px; }
+      .add-row .select-input{ flex:1; min-width:120px; }
+      .add-btn{
+        background:var(--brown); color:#fff; border:none; border-radius:12px;
+        font-weight:800; font-size:14.5px; min-height:44px; padding:8px 18px; flex:none;
+      }
+
+      /* ---------- البطاقات (مناديب / زيارات) ---------- */
+      .mini-card{
+        border:1.5px solid var(--chip-border); background:#fffdf8; border-radius:14px;
+        padding:12px 14px; margin-bottom:10px;
+      }
+      .mini-card .head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+      .mini-card .title{ font-weight:800; font-size:16px; color:var(--brown-dark); }
+      .mini-card .sub{ color:var(--muted); font-size:13px; font-weight:600; }
+      .mini-card .lines{ margin-top:8px; font-size:14px; line-height:1.9; }
+      .mini-card .lines b{ color:var(--brown-dark); }
+      .badge{
+        display:inline-block; background:var(--chip); border:1px solid var(--chip-border);
+        color:var(--brown); border-radius:999px; font-size:12.5px; font-weight:800; padding:2px 10px;
+      }
+      .badge.brown{ background:var(--brown); border-color:var(--brown); color:#fff; }
+      .edit-btn{
+        background:#fff; border:1.5px solid var(--brown); color:var(--brown);
+        border-radius:9px; font-weight:800; font-size:13.5px; min-height:38px; padding:5px 14px; flex:none;
+      }
+      .loc-link{ color:var(--brown); font-weight:800; text-decoration:none; }
+      .empty-note{ text-align:center; color:var(--muted); font-weight:600; padding:22px 6px; font-size:14.5px; }
+      .refresh-btn{
+        background:#fff; border:1.5px solid var(--chip-border); color:var(--brown);
+        border-radius:10px; font-weight:700; font-size:13.5px; min-height:38px; padding:6px 14px; margin-bottom:12px;
+      }
+      .rep-form{ border:1.5px solid var(--chip-border); border-radius:14px; padding:14px; margin-bottom:14px; background:#fffdf8; }
+      .rep-form h4{ margin:0 0 12px; font-size:15px; font-weight:800; color:var(--brown-dark); }
+      .btn-row{ display:flex; gap:8px; }
+      .btn-row .btn-brown{ flex:1; }
+      .btn-cancel{
+        background:#fff; border:1.5px solid var(--chip-border); color:var(--brown);
+        border-radius:12px; font-weight:800; font-size:15px; min-height:48px; padding:10px 16px;
+      }
+      .spinner{ text-align:center; color:var(--muted); font-weight:700; padding:18px 0; font-size:14.5px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <!-- ======== شاشة الدخول ======== -->
+      <section id="loginView" class="card">
+        <h1 class="login-title">زيارات المندوب</h1>
+        <p class="login-sub">ادخل بكودك عشان تسجّل زياراتك</p>
+        <div class="field">
+          <label for="codeInput">كود الدخول</label>
+          <input id="codeInput" class="text-input" type="text" inputmode="numeric" autocomplete="off" placeholder="مثال: 1234" />
+        </div>
+        <div class="field">
+          <label for="urlInput">رابط الشيت (Web App)</label>
+          <input id="urlInput" class="text-input url-input" type="url" autocomplete="off" spellcheck="false" />
+        </div>
+        <button id="loginBtn" class="btn btn-brown" type="button">دخول</button>
+        <div id="loginMsg" class="msg"></div>
+      </section>
+
+      <!-- ======== التطبيق ======== -->
+      <section id="appView" class="card hidden">
+        <div class="userbar">
+          <div class="who"><span id="userName"></span><small id="userMeta"></small></div>
+          <button id="logoutBtn" class="logout-btn" type="button">تسجيل الخروج</button>
+        </div>
+
+        <nav class="tabs" role="tablist">
+          <button class="tab-btn active" type="button" data-tab="form">تسجيل زيارة</button>
+          <button class="tab-btn" type="button" data-tab="reps">المناديب</button>
+          <button class="tab-btn" type="button" data-tab="visits">كل الزيارات</button>
+        </nav>
+
+        <!-- ===== تبويب تسجيل زيارة ===== -->
+        <div id="tab-form">
+          <div id="formLoading" class="spinner hidden">جارٍ تحميل القوائم…</div>
+          <div id="formBody">
+            <div class="group">
+              <div class="group-label">نوع العميل</div>
+              <div class="chips" id="typeChips"></div>
+            </div>
+
+            <div class="group hidden" id="classGroup">
+              <div class="group-label">الفئة</div>
+              <div class="chips" id="classChips"></div>
+            </div>
+
+            <div class="group">
+              <div class="group-label">رقم الزيارة</div>
+              <div class="chips" id="visitNoChips"></div>
+            </div>
+
+            <div class="field">
+              <label for="shopName">اسم العميل / المحل</label>
+              <input id="shopName" class="text-input" type="text" autocomplete="off" placeholder="مثال: كافيه النيل" />
+            </div>
+
+            <div class="row2">
+              <div class="field">
+                <label for="phone">التليفون <span class="opt" style="color:var(--muted);font-weight:600;font-size:12.5px">(اختياري)</span></label>
+                <input id="phone" class="text-input" type="tel" inputmode="tel" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="amount">قيمة الطلب (جنيه)</label>
+                <input id="amount" class="text-input" type="number" inputmode="decimal" min="0" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="group">
+              <div class="group-label">نتيجة الزيارة</div>
+              <div class="chips" id="resultChips"></div>
+            </div>
+
+            <div class="group hidden" id="testsGroup">
+              <div class="group-label">أنواع التيست المطلوبة <span class="opt">(اختر أكثر من نوع)</span></div>
+              <div class="chips" id="testChips"></div>
+            </div>
+
+            <div class="field">
+              <label for="notes">ملاحظات</label>
+              <textarea id="notes" class="text-area"></textarea>
+            </div>
+
+            <div class="field">
+              <button id="locBtn" class="btn btn-outline" type="button">📍 تسجيل موقعي الحالي</button>
+            </div>
+
+            <button id="saveBtn" class="btn btn-brown" type="button">حفظ الزيارة</button>
+            <div id="formMsg" class="msg"></div>
+          </div>
+
+          <!-- ===== تعديل القوائم (للمدير فقط) ===== -->
+          <div id="adminLists" class="admin-box hidden">
+            <h3>تعديل القوائم</h3>
+            <p class="hint">أي تعديل هنا بيظهر في النموذج على طول — القوائم بتتقرأ من صفحة «قوائم النموذج» في الشيت الموحد.</p>
+            <div id="listsEditor"></div>
+            <div id="listsMsg" class="msg"></div>
+          </div>
+        </div>
+
+        <!-- ===== تبويب المناديب ===== -->
+        <div id="tab-reps" class="hidden">
+          <div id="repsBody"></div>
+        </div>
+
+        <!-- ===== تبويب كل الزيارات ===== -->
+        <div id="tab-visits" class="hidden">
+          <button id="visitsRefresh" class="refresh-btn" type="button">↻ تحديث</button>
+          <div id="visitsBody"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      "use strict";
+      var DEFAULT_URL = "https://script.google.com/macros/s/AKfycbzQkHQt7P-60wPv1zZGRMZzMxmnxrNcwqbQR35Br0gYak4NDPgSJNIKOMvoNMmvMFVO/exec";
+      var K_URL = "zyarat_url", K_CODE = "zyarat_code";
+      var TEST_RESULT_NAME = "طلب تيست";
+
+      function lsGet(k){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+      function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+      function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+      function $(id){ return document.getElementById(id); }
+      function esc(s){
+        return String(s === null || s === undefined ? "" : s)
+          .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+      }
+      function showMsg(el, text, ok){
+        el.textContent = text;
+        el.className = "msg " + (ok ? "ok" : "err");
+        if(!text) el.className = "msg";
+      }
+
+      var state = {
+        url: "", code: "", user: null,
+        lists: null,           // formLists response
+        sel: { type:"", cls:"", visitNo:"", result:"", tests:[] },
+        location: "",
+        repsLoaded: false, visitsLoaded: false,
+        editingRepId: null
+      };
+
+      function scriptUrl(){ return state.url || DEFAULT_URL; }
+
+      function apiGet(params){
+        var qs = Object.keys(params).map(function(k){
+          return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+        }).join("&");
+        return fetch(scriptUrl() + "?" + qs, { method:"GET" }).then(function(r){ return r.text(); })
+          .then(function(t){ try{ return JSON.parse(t); }catch(e){ throw new Error("رد غير صالح من الخادم"); } });
+      }
+      function apiPost(payload){
+        return fetch(scriptUrl(), {
+          method:"POST",
+          headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).then(function(r){ return r.text(); })
+          .then(function(t){ try{ return JSON.parse(t); }catch(e){ throw new Error("رد غير صالح من الخادم"); } });
+      }
+
+      /* ================= الدخول ================= */
+      function doLogin(code, url, silent){
+        var msg = $("loginMsg");
+        if(!code){ showMsg(msg, "اكتب كود الدخول الأول"); return Promise.resolve(false); }
+        state.url = (url || "").trim() || DEFAULT_URL;
+        var btn = $("loginBtn");
+        btn.disabled = true; btn.textContent = "جارٍ الدخول…";
+        return apiGet({ action:"login", code: code }).then(function(res){
+          btn.disabled = false; btn.textContent = "دخول";
+          if(!res || !res.ok || !res.user){
+            if(!silent) showMsg(msg, "الكود غير صحيح — راجع الكود وحاول تاني");
+            return false;
+          }
+          state.code = String(code);
+          state.user = res.user;
+          lsSet(K_CODE, state.code);
+          lsSet(K_URL, state.url);
+          enterApp();
+          return true;
+        }).catch(function(){
+          btn.disabled = false; btn.textContent = "دخول";
+          if(!silent) showMsg(msg, "مش قادر أوصل للشيت — راجع الرابط والاتصال وحاول تاني");
+          return false;
+        });
+      }
+
+      function enterApp(){
+        $("loginView").classList.add("hidden");
+        $("appView").classList.remove("hidden");
+        var u = state.user;
+        $("userName").textContent = u.name || "";
+        var meta = [];
+        if(u.role === "admin") meta.push("المدير");
+        if(u.line) meta.push("الخط: " + u.line);
+        if(u.area) meta.push(u.area);
+        $("userMeta").textContent = meta.join(" • ");
+        $("adminLists").classList.toggle("hidden", u.role !== "admin");
+        loadFormLists();
+      }
+
+      function doLogout(){
+        lsDel(K_CODE);
+        state.code = ""; state.user = null; state.lists = null;
+        state.repsLoaded = false; state.visitsLoaded = false;
+        $("appView").classList.add("hidden");
+        $("loginView").classList.remove("hidden");
+        $("codeInput").value = "";
+        showMsg($("loginMsg"), "");
+      }
+
+      /* ================= القوائم والنموذج ================= */
+      function loadFormLists(){
+        $("formLoading").classList.remove("hidden");
+        return apiGet({ action:"formLists", code: state.code }).then(function(res){
+          $("formLoading").classList.add("hidden");
+          if(!res || !res.ok) throw new Error("lists");
+          state.lists = res;
+          renderFormLists();
+          if(state.user && state.user.role === "admin") renderListsEditor();
+        }).catch(function(){
+          $("formLoading").classList.add("hidden");
+          showMsg($("formMsg"), "مش قادر أحمّل قوائم النموذج من الشيت — حاول تاني بعد شوية");
+        });
+      }
+
+      function chipEl(text, selected, circle, onClick){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip" + (circle ? " circle" : "") + (selected ? " selected" : "");
+        b.textContent = text;
+        b.addEventListener("click", onClick);
+        return b;
+      }
+
+      function renderFormLists(){
+        var L = state.lists;
+        if(!L) return;
+        // نوع العميل
+        var tc = $("typeChips"); tc.innerHTML = "";
+        (L.types || []).forEach(function(t){
+          tc.appendChild(chipEl(t.name, state.sel.type === t.name, false, function(){
+            state.sel.type = t.name;
+            state.sel.cls = "";
+            renderFormLists();
+          }));
+        });
+        // الفئة حسب النوع
+        var typeObj = (L.types || []).filter(function(t){ return t.name === state.sel.type; })[0];
+        var classes = typeObj ? (typeObj.classes || []) : [];
+        $("classGroup").classList.toggle("hidden", !classes.length);
+        var cc = $("classChips"); cc.innerHTML = "";
+        classes.forEach(function(c){
+          cc.appendChild(chipEl(c, state.sel.cls === c, true, function(){
+            state.sel.cls = c;
+            renderFormLists();
+          }));
+        });
+        if(classes.length && state.sel.cls && classes.indexOf(state.sel.cls) === -1) state.sel.cls = "";
+        // رقم الزيارة
+        var vc = $("visitNoChips"); vc.innerHTML = "";
+        (L.visitNos || []).forEach(function(v){
+          vc.appendChild(chipEl(v, state.sel.visitNo === v, false, function(){
+            state.sel.visitNo = v;
+            renderFormLists();
+          }));
+        });
+        // نتيجة الزيارة
+        var rc = $("resultChips"); rc.innerHTML = "";
+        (L.results || []).forEach(function(r){
+          rc.appendChild(chipEl(r, state.sel.result === r, false, function(){
+            state.sel.result = r;
+            renderFormLists();
+          }));
+        });
+        // التيستات
+        var showTests = state.sel.result === TEST_RESULT_NAME;
+        $("testsGroup").classList.toggle("hidden", !showTests);
+        var sc = $("testChips"); sc.innerHTML = "";
+        (L.tests || []).forEach(function(t){
+          var on = state.sel.tests.indexOf(t) !== -1;
+          sc.appendChild(chipEl(t, on, false, function(){
+            var i = state.sel.tests.indexOf(t);
+            if(i === -1) state.sel.tests.push(t); else state.sel.tests.splice(i, 1);
+            renderFormLists();
+          }));
+        });
+      }
+
+      /* ================= الموقع ================= */
+      $("locBtn").addEventListener("click", function(){
+        var btn = $("locBtn");
+        if(!navigator.geolocation){
+          showMsg($("formMsg"), "المتصفح لا يدعم تحديد الموقع");
+          return;
+        }
+        btn.disabled = true; btn.textContent = "📍 جارٍ تحديد الموقع…";
+        navigator.geolocation.getCurrentPosition(function(pos){
+          var lat = pos.coords.latitude, lng = pos.coords.longitude;
+          state.location = "https://www.google.com/maps?q=" + lat + "," + lng;
+          btn.disabled = false;
+          btn.textContent = "📍 تم تسجيل الموقع ✓ (اضغط للتحديث)";
+          btn.classList.add("done");
+          showMsg($("formMsg"), "");
+        }, function(){
+          btn.disabled = false; btn.textContent = "📍 تسجيل موقعي الحالي";
+          showMsg($("formMsg"), "لم يتم تسجيل الموقع — فعّل إذن الموقع وحاول تاني");
+        }, { enableHighAccuracy:true, timeout:15000 });
+      });
+
+      /* ================= حفظ الزيارة ================= */
+      function pad(n){ return (n < 10 ? "0" : "") + n; }
+      function nowStamp(){
+        var d = new Date();
+        return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) +
+               " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+      }
+
+      $("saveBtn").addEventListener("click", function(){
+        var msg = $("formMsg");
+        var L = state.lists;
+        if(!L){ showMsg(msg, "القوائم لسه بتتحمّل — استنى لحظة وحاول تاني"); return; }
+        var typeObj = (L.types || []).filter(function(t){ return t.name === state.sel.type; })[0];
+        var hasClasses = !!(typeObj && typeObj.classes && typeObj.classes.length);
+        var name = $("shopName").value.trim();
+        if(!state.sel.type){ showMsg(msg, "اختر نوع العميل"); return; }
+        if(hasClasses && !state.sel.cls){ showMsg(msg, "اختر الفئة"); return; }
+        if(!state.sel.visitNo){ showMsg(msg, "اختر رقم الزيارة"); return; }
+        if(!name){ showMsg(msg, "اكتب اسم العميل / المحل"); $("shopName").focus(); return; }
+        if(!state.sel.result){ showMsg(msg, "اختر نتيجة الزيارة"); return; }
+        if(state.sel.result === TEST_RESULT_NAME && !state.sel.tests.length){
+          showMsg(msg, "اختر نوع تيست واحد على الأقل"); return;
+        }
+        var amountRaw = $("amount").value.trim();
+        var payload = {
+          action: "visit",
+          code: state.code,
+          id: "v" + Date.now().toString(36) + Math.floor(Math.random()*1e6).toString(36),
+          date: nowStamp(),
+          type: state.sel.type,
+          cls: hasClasses ? state.sel.cls : "",
+          name: name,
+          phone: $("phone").value.trim(),
+          visitNo: state.sel.visitNo,
+          result: state.sel.result,
+          tests: state.sel.tests.join("، "),
+          amount: amountRaw === "" ? null : Number(amountRaw),
+          notes: $("notes").value.trim(),
+          location: state.location
+        };
+        var btn = $("saveBtn");
+        btn.disabled = true; btn.textContent = "جارٍ الحفظ…";
+        apiPost(payload).then(function(res){
+          btn.disabled = false; btn.textContent = "حفظ الزيارة";
+          if(res && res.ok){
+            showMsg(msg, res.duplicate ? "الزيارة دي محفوظة من قبل" : "تم حفظ الزيارة بنجاح ✓", true);
+            resetForm();
+            state.visitsLoaded = false;
+          } else {
+            showMsg(msg, "لم يتم الحفظ" + (res && res.error ? " (" + res.error + ")" : "") + " — حاول تاني");
+          }
+        }).catch(function(){
+          btn.disabled = false; btn.textContent = "حفظ الزيارة";
+          showMsg(msg, "مش قادر أوصل للشيت — راجع الاتصال وحاول تاني");
+        });
+      });
+
+      function resetForm(){
+        state.sel = { type:"", cls:"", visitNo:"", result:"", tests:[] };
+        state.location = "";
+        $("shopName").value = ""; $("phone").value = "";
+        $("amount").value = ""; $("notes").value = "";
+        var btn = $("locBtn");
+        btn.textContent = "📍 تسجيل موقعي الحالي";
+        btn.classList.remove("done");
+        renderFormLists();
+      }
+
+      /* ================= تعديل القوائم (المدير) ================= */
+      var SECTIONS = [
+        { key:"type",    label:"أنواع العميل" },
+        { key:"class",   label:"الفئات" },
+        { key:"visitNo", label:"أرقام الزيارة" },
+        { key:"result",  label:"نتائج الزيارة" },
+        { key:"test",    label:"أنواع التيست" }
+      ];
+
+      function renderListsEditor(){
+        var box = $("listsEditor");
+        box.innerHTML = "";
+        var items = (state.lists && state.lists.items) || [];
+        var types = (state.lists && state.lists.types) || [];
+        SECTIONS.forEach(function(sec){
+          var wrap = document.createElement("div");
+          wrap.className = "list-section";
+          var h = document.createElement("h4");
+          h.textContent = sec.label;
+          wrap.appendChild(h);
+
+          items.filter(function(i){ return i.section === sec.key; }).forEach(function(it){
+            var row = document.createElement("div");
+            row.className = "item-row";
+            var nm = document.createElement("span");
+            nm.className = "nm"; nm.textContent = it.name;
+            row.appendChild(nm);
+            if(sec.key === "class" && it.parent){
+              var pr = document.createElement("span");
+              pr.className = "pr"; pr.textContent = it.parent;
+              row.appendChild(pr);
+            }
+            var del = document.createElement("button");
+            del.type = "button"; del.className = "del-btn"; del.textContent = "✕";
+            del.setAttribute("aria-label", "حذف " + it.name);
+            del.addEventListener("click", function(){ deleteFormItem(it, del); });
+            row.appendChild(del);
+            wrap.appendChild(row);
+          });
+
+          var add = document.createElement("div");
+          add.className = "add-row";
+          var input = document.createElement("input");
+          input.className = "text-input"; input.type = "text";
+          input.placeholder = "إضافة جديد…";
+          add.appendChild(input);
+          var parentSel = null;
+          if(sec.key === "class"){
+            parentSel = document.createElement("select");
+            parentSel.className = "select-input";
+            types.forEach(function(t){
+              var o = document.createElement("option");
+              o.value = t.name; o.textContent = t.name;
+              parentSel.appendChild(o);
+            });
+            add.appendChild(parentSel);
+          }
+          var addBtn = document.createElement("button");
+          addBtn.type = "button"; addBtn.className = "add-btn"; addBtn.textContent = "إضافة";
+          addBtn.addEventListener("click", function(){
+            var name = input.value.trim();
+            if(!name){ showMsg($("listsMsg"), "اكتب الاسم الأول"); return; }
+            addFormItem(sec.key, name, parentSel ? parentSel.value : "", addBtn);
+          });
+          add.appendChild(addBtn);
+          wrap.appendChild(add);
+          box.appendChild(wrap);
+        });
+      }
+
+      function addFormItem(section, name, parent, btn){
+        btn.disabled = true;
+        apiPost({ action:"upsertFormItem", code: state.code,
+                  item:{ section: section, name: name, parent: parent || "" } })
+          .then(function(res){
+            btn.disabled = false;
+            if(res && res.ok){
+              showMsg($("listsMsg"), "تمت الإضافة ✓", true);
+              loadFormLists();
+            } else {
+              showMsg($("listsMsg"), "لم تتم الإضافة" + (res && res.error ? " (" + res.error + ")" : ""));
+            }
+          }).catch(function(){
+            btn.disabled = false;
+            showMsg($("listsMsg"), "مش قادر أوصل للشيت — حاول تاني");
+          });
+      }
+
+      function deleteFormItem(it, btn){
+        btn.disabled = true;
+        apiPost({ action:"deleteFormItem", code: state.code, id: it.id })
+          .then(function(res){
+            if(res && res.ok){
+              if(state.sel.type === it.name && it.section === "type"){ state.sel.type = ""; state.sel.cls = ""; }
+              if(state.sel.cls === it.name && it.section === "class") state.sel.cls = "";
+              if(state.sel.visitNo === it.name && it.section === "visitNo") state.sel.visitNo = "";
+              if(state.sel.result === it.name && it.section === "result") state.sel.result = "";
+              if(it.section === "test"){
+                var i = state.sel.tests.indexOf(it.name);
+                if(i !== -1) state.sel.tests.splice(i, 1);
+              }
+              showMsg($("listsMsg"), "تم الحذف ✓", true);
+              loadFormLists();
+            } else {
+              btn.disabled = false;
+              showMsg($("listsMsg"), "لم يتم الحذف" + (res && res.error ? " (" + res.error + ")" : ""));
+            }
+          }).catch(function(){
+            btn.disabled = false;
+            showMsg($("listsMsg"), "مش قادر أوصل للشيت — حاول تاني");
+          });
+      }
+
+      /* ================= التبويبات ================= */
+      var tabBtns = document.querySelectorAll(".tab-btn");
+      tabBtns.forEach(function(b){
+        b.addEventListener("click", function(){
+          tabBtns.forEach(function(x){ x.classList.toggle("active", x === b); });
+          ["form","reps","visits"].forEach(function(t){
+            $("tab-" + t).classList.toggle("hidden", t !== b.getAttribute("data-tab"));
+          });
+          if(b.getAttribute("data-tab") === "reps" && !state.repsLoaded) loadReps();
+          if(b.getAttribute("data-tab") === "visits" && !state.visitsLoaded) loadVisits();
+        });
+      });
+
+      /* ================= المناديب ================= */
+      function loadReps(){
+        var body = $("repsBody");
+        if(state.user.role !== "admin"){
+          var u = state.user;
+          body.innerHTML = "";
+          var card = document.createElement("div");
+          card.className = "mini-card";
+          card.innerHTML =
+            '<div class="head"><div><div class="title">' + esc(u.name) + '</div>' +
+            '<div class="sub">مندوب</div></div></div>' +
+            '<div class="lines">' +
+            (u.line ? "<div><b>الخط:</b> " + esc(u.line) + "</div>" : "") +
+            (u.vehicle ? "<div><b>العربية:</b> " + esc(u.vehicle) + "</div>" : "") +
+            (u.area ? "<div><b>المنطقة:</b> " + esc(u.area) + "</div>" : "") +
+            "</div>";
+          body.appendChild(card);
+          state.repsLoaded = true;
+          return;
+        }
+        body.innerHTML = '<div class="spinner">جارٍ تحميل المناديب…</div>';
+        apiGet({ action:"reps", code: state.code }).then(function(res){
+          if(!res || !res.ok) throw new Error("reps");
+          renderReps(res.reps || []);
+          state.repsLoaded = true;
+        }).catch(function(){
+          body.innerHTML = '<div class="empty-note">مش قادر أحمّل المناديب — حاول تاني بعد شوية</div>';
+        });
+      }
+
+      function renderReps(reps){
+        var body = $("repsBody");
+        body.innerHTML = "";
+        var addBtn = document.createElement("button");
+        addBtn.type = "button"; addBtn.className = "refresh-btn"; addBtn.textContent = "＋ إضافة مندوب";
+        addBtn.addEventListener("click", function(){ showRepForm(null); });
+        body.appendChild(addBtn);
+
+        var formHost = document.createElement("div");
+        formHost.id = "repFormHost";
+        body.appendChild(formHost);
+
+        if(!reps.length){
+          var e = document.createElement("div");
+          e.className = "empty-note"; e.textContent = "لا يوجد مناديب بعد";
+          body.appendChild(e);
+        }
+        reps.forEach(function(r){
+          var card = document.createElement("div");
+          card.className = "mini-card";
+          var head = document.createElement("div");
+          head.className = "head";
+          var left = document.createElement("div");
+          left.innerHTML = '<div class="title">' + esc(r.name) + '</div>' +
+            '<div class="sub">' + esc(r.line || "") + '</div>';
+          head.appendChild(left);
+          var eb = document.createElement("button");
+          eb.type = "button"; eb.className = "edit-btn"; eb.textContent = "تعديل";
+          eb.addEventListener("click", function(){ showRepForm(r); });
+          head.appendChild(eb);
+          card.appendChild(head);
+          var lines = document.createElement("div");
+          lines.className = "lines";
+          lines.innerHTML =
+            (r.vehicle ? "<div><b>العربية:</b> " + esc(r.vehicle) + "</div>" : "") +
+            (r.area ? "<div><b>المنطقة:</b> " + esc(r.area) + "</div>" : "");
+          card.appendChild(lines);
+          body.appendChild(card);
+        });
+      }
+
+      function showRepForm(rep){
+        var host = $("repFormHost");
+        if(!host) return;
+        state.editingRepId = rep ? rep.id : null;
+        host.innerHTML =
+          '<div class="rep-form">' +
+          "<h4>" + (rep ? "تعديل مندوب" : "إضافة مندوب") + "</h4>" +
+          '<div class="field"><label>اسم المندوب</label><input id="rfName" class="text-input" type="text" value="' + esc(rep ? rep.name : "") + '" /></div>' +
+          '<div class="field"><label>كود الدخول</label><input id="rfCode" class="text-input" type="text" inputmode="numeric" autocomplete="off" placeholder="كود المندوب" /></div>' +
+          '<div class="field"><label>الخط</label><input id="rfLine" class="text-input" type="text" value="' + esc(rep ? rep.line : "") + '" /></div>' +
+          '<div class="row2">' +
+            '<div class="field"><label>العربية</label><input id="rfVehicle" class="text-input" type="text" value="' + esc(rep ? rep.vehicle : "") + '" /></div>' +
+            '<div class="field"><label>المنطقة</label><input id="rfArea" class="text-input" type="text" value="' + esc(rep ? rep.area : "") + '" /></div>' +
+          "</div>" +
+          '<div class="btn-row"><button id="rfSave" class="btn btn-brown" type="button">حفظ المندوب</button>' +
+          '<button id="rfCancel" class="btn-cancel" type="button">إلغاء</button></div>' +
+          '<div id="rfMsg" class="msg"></div>' +
+          "</div>";
+        $("rfCancel").addEventListener("click", function(){ host.innerHTML = ""; state.editingRepId = null; });
+        $("rfSave").addEventListener("click", function(){
+          var name = $("rfName").value.trim();
+          var code = $("rfCode").value.trim();
+          if(!name || !code){ showMsg($("rfMsg"), "اسم المندوب وكوده إلزاميين"); return; }
+          var btn = $("rfSave");
+          btn.disabled = true; btn.textContent = "جارٍ الحفظ…";
+          apiPost({ action:"upsertRep", adminCode: state.code, rep:{
+            id: state.editingRepId || undefined,
+            name: name, code: code,
+            line: $("rfLine").value.trim(),
+            vehicle: $("rfVehicle").value.trim(),
+            area: $("rfArea").value.trim()
+          }}).then(function(res){
+            btn.disabled = false; btn.textContent = "حفظ المندوب";
+            if(res && res.ok){
+              host.innerHTML = "";
+              state.editingRepId = null;
+              state.repsLoaded = false;
+              loadReps();
+            } else {
+              showMsg($("rfMsg"), "لم يتم الحفظ" + (res && res.error ? " (" + res.error + ")" : ""));
+            }
+          }).catch(function(){
+            btn.disabled = false; btn.textContent = "حفظ المندوب";
+            showMsg($("rfMsg"), "مش قادر أوصل للشيت — حاول تاني");
+          });
+        });
+        host.scrollIntoView({ behavior:"smooth", block:"start" });
+      }
+
+      /* ================= كل الزيارات ================= */
+      function fmtDate(s){
+        s = String(s || "");
+        var m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+        if(m) return m[3] + "/" + m[2] + "/" + m[1] + " — " + m[4] + ":" + m[5];
+        var d = new Date(s);
+        if(s && !isNaN(d)){
+          return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear() +
+                 " — " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+        }
+        return s;
+      }
+
+      function loadVisits(){
+        var body = $("visitsBody");
+        body.innerHTML = '<div class="spinner">جارٍ تحميل الزيارات…</div>';
+        apiGet({ action:"visits2", code: state.code }).then(function(res){
+          if(!res || !res.ok) throw new Error("visits");
+          renderVisits(res.visits || []);
+          state.visitsLoaded = true;
+        }).catch(function(){
+          body.innerHTML = '<div class="empty-note">مش قادر أحمّل الزيارات — حاول تاني بعد شوية</div>';
+        });
+      }
+
+      function renderVisits(visits){
+        var body = $("visitsBody");
+        body.innerHTML = "";
+        if(!visits.length){
+          body.innerHTML = '<div class="empty-note">لا توجد زيارات مسجلة بعد</div>';
+          return;
+        }
+        visits.slice().reverse().forEach(function(v){
+          var card = document.createElement("div");
+          card.className = "mini-card";
+          var badges = "";
+          if(v.type) badges += ' <span class="badge">' + esc(v.type) + (v.cls ? " — " + esc(v.cls) : "") + "</span>";
+          if(v.visitNo) badges += ' <span class="badge">' + esc(v.visitNo) + "</span>";
+          if(v.result) badges += ' <span class="badge brown">' + esc(v.result) + "</span>";
+          var lines = "";
+          if(state.user.role === "admin" && v.rep) lines += "<div><b>المندوب:</b> " + esc(v.rep) + "</div>";
+          if(v.date) lines += "<div><b>التاريخ:</b> " + esc(fmtDate(v.date)) + "</div>";
+          if(v.phone) lines += "<div><b>التليفون:</b> " + esc(v.phone) + "</div>";
+          if(v.amount !== null && v.amount !== undefined && v.amount !== "") lines += "<div><b>قيمة الطلب:</b> " + esc(v.amount) + " جنيه</div>";
+          if(v.tests) lines += "<div><b>التيستات:</b> " + esc(v.tests) + "</div>";
+          if(v.notes) lines += "<div><b>ملاحظات:</b> " + esc(v.notes) + "</div>";
+          if(v.location) lines += '<div><a class="loc-link" href="' + esc(v.location) + '" target="_blank" rel="noopener">📍 الموقع</a></div>';
+          card.innerHTML =
+            '<div class="head"><div><div class="title">' + esc(v.name || "—") + "</div>" +
+            '<div class="sub">' + badges + "</div></div></div>" +
+            '<div class="lines">' + lines + "</div>";
+          body.appendChild(card);
+        });
+      }
+
+      $("visitsRefresh").addEventListener("click", function(){ state.visitsLoaded = false; loadVisits(); });
+
+      /* ================= بدء التشغيل ================= */
+      $("loginBtn").addEventListener("click", function(){
+        doLogin($("codeInput").value.trim(), $("urlInput").value, false);
+      });
+      $("codeInput").addEventListener("keydown", function(e){
+        if(e.key === "Enter") doLogin($("codeInput").value.trim(), $("urlInput").value, false);
+      });
+      $("logoutBtn").addEventListener("click", doLogout);
+
+      (function init(){
+        var savedUrl = lsGet(K_URL);
+        $("urlInput").value = (typeof savedUrl === "string" && savedUrl) ? savedUrl : DEFAULT_URL;
+        var savedCode = lsGet(K_CODE);
+        if(savedCode){
+          $("codeInput").value = savedCode;
+          doLogin(String(savedCode), $("urlInput").value, true).then(function(ok){
+            if(!ok){
+              lsDel(K_CODE);
+              showMsg($("loginMsg"), "انتهت الجلسة — ادخل بالكود من جديد");
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
