@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:," />
+    <title>لوحة تحكم الزيارات مصنع OSO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#f5efe1;
+        --card:#ffffff;
+        --brown:#6f4e37;
+        --brown-dark:#54382a;
+        --chip:#f7f1e3;
+        --chip-border:#d9c8a9;
+        --ink:#3e2f23;
+        --muted:#8a7a63;
+        --danger:#b3402e;
+        --danger-bg:#fbeae6;
+        --ok:#3f7d3a;
+        --ok-bg:#e9f4e4;
+        --old:#7a5a21;
+        --old-bg:#f3e7c8;
+        --radius:18px;
+      }
+      *{ box-sizing:border-box; }
+      html,body{ margin:0; padding:0; }
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+        -webkit-font-smoothing:antialiased;
+        padding:14px 12px 48px;
+      }
+      button, input, select, textarea{ font-family:inherit; }
+      button{ cursor:pointer; }
+      a{ color:var(--brown); }
+      .wrap{ max-width:1120px; margin:0 auto; }
+      .hidden{ display:none !important; }
+
+      .card{
+        background:var(--card);
+        border-radius:var(--radius);
+        box-shadow:0 2px 14px rgba(111,78,55,.10);
+        padding:18px 16px 20px;
+      }
+
+      /* ---------- الدخول ---------- */
+      .login-card{ max-width:440px; margin:8vh auto 0; }
+      .login-title{ font-size:24px; font-weight:900; color:var(--brown-dark); margin:4px 0 2px; text-align:center; }
+      .login-sub{ text-align:center; color:var(--muted); font-size:14px; margin:0 0 20px; }
+      .field{ margin-bottom:14px; }
+      .field label{ display:block; font-weight:700; font-size:14px; margin-bottom:6px; color:var(--brown-dark); }
+      .text-input, .select-input, input[type="date"].text-input{
+        width:100%; border:1.5px solid var(--chip-border); border-radius:12px;
+        background:#fffdf8; color:var(--ink); font-size:16px; padding:10px 12px; min-height:44px;
+        outline:none;
+      }
+      .text-input:focus, .select-input:focus{ border-color:var(--brown); }
+      .btn{
+        border:none; border-radius:12px; font-weight:800; font-size:16px;
+        min-height:48px; padding:10px 18px;
+      }
+      .btn-brown{ background:var(--brown); color:#fff; }
+      .btn-brown:active{ background:var(--brown-dark); }
+      .btn-brown:disabled{ opacity:.55; cursor:default; }
+      .btn-danger{ background:var(--danger); color:#fff; }
+      .btn-ghost{ background:#fff; color:var(--brown); border:1.5px solid var(--brown); }
+      .msg{ border-radius:10px; padding:10px 12px; font-size:14px; font-weight:600; margin:12px 0 0; display:none; }
+      .msg.err{ display:block; background:var(--danger-bg); color:var(--danger); border:1px solid #eec5bb; }
+      .msg.ok{ display:block; background:var(--ok-bg); color:var(--ok); border:1px solid #c4dfba; }
+      .msg.info{ display:block; background:var(--chip); color:var(--brown-dark); border:1px solid var(--chip-border); }
+
+      /* ---------- الشريط العلوي والتبويبات ---------- */
+      .userbar{
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        margin-bottom:12px; flex-wrap:wrap;
+      }
+      .userbar .who{ font-weight:900; color:var(--brown-dark); font-size:20px; }
+      .userbar .who small{ display:block; font-weight:600; color:var(--muted); font-size:12.5px; }
+      .userbar-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+      .btn-small{
+        background:#fff; border:1.5px solid var(--chip-border); color:var(--brown);
+        border-radius:10px; font-weight:700; font-size:13.5px; min-height:38px; padding:6px 14px;
+      }
+      .btn-small:disabled{ opacity:.55; cursor:default; }
+      .tabs{
+        display:flex; gap:6px; background:var(--chip); border:1px solid var(--chip-border);
+        border-radius:14px; padding:5px; margin-bottom:18px; flex-wrap:wrap;
+      }
+      .tab-btn{
+        flex:1 1 auto; border:none; background:transparent; color:var(--brown);
+        font-weight:800; font-size:15px; border-radius:10px; min-height:42px; padding:8px 10px;
+        white-space:nowrap;
+      }
+      .tab-btn.active{ background:var(--brown); color:#fff; }
+      .tab-badge{
+        display:inline-block; min-width:22px; padding:1px 6px; margin-inline-start:4px;
+        background:var(--danger); color:#fff; border-radius:999px; font-size:12px; font-weight:800;
+        vertical-align:1px;
+      }
+      .tab-btn.active .tab-badge{ background:#fff; color:var(--danger); }
+
+      /* ---------- كروت الإجماليات ---------- */
+      .stats-grid{
+        display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+        gap:10px; margin-bottom:16px;
+      }
+      .stat-card{
+        background:var(--card); border-radius:14px; box-shadow:0 2px 10px rgba(111,78,55,.08);
+        padding:14px 12px; text-align:center;
+      }
+      .stat-card .num{ font-size:28px; font-weight:900; color:var(--brown-dark); line-height:1.15; }
+      .stat-card .lbl{ font-size:13px; font-weight:700; color:var(--muted); }
+      .stat-card.green .num{ color:var(--ok); }
+      .stat-card.amber .num{ color:var(--old); }
+
+      .section-title{ font-size:18px; font-weight:900; color:var(--brown-dark); margin:22px 0 4px; }
+      .section-title:first-child{ margin-top:0; }
+      .section-hint{ color:var(--muted); font-size:13px; margin:0 0 12px; }
+
+      .rep-grid{
+        display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+        gap:10px; margin-bottom:6px;
+      }
+      .rep-card{
+        background:var(--card); border-radius:14px; box-shadow:0 2px 10px rgba(111,78,55,.08);
+        padding:14px; text-align:right; border:1.5px solid transparent; width:100%;
+        font-family:inherit; color:var(--ink);
+      }
+      button.rep-card:hover{ border-color:var(--chip-border); }
+      .rep-card .rname{ font-weight:900; font-size:16.5px; color:var(--brown-dark); margin-bottom:6px; }
+      .rep-card .rrow{ display:flex; justify-content:space-between; font-size:13.5px; font-weight:600; color:var(--muted); padding:2px 0; }
+      .rep-card .rrow b{ color:var(--ink); }
+      .rep-card .rtotal{ border-top:1px dashed var(--chip-border); margin-top:6px; padding-top:8px; font-weight:800; color:var(--brown); font-size:14px; display:flex; justify-content:space-between; }
+      .rep-card.idle{ opacity:.65; }
+
+      /* ---------- الجداول ---------- */
+      .table-card{
+        background:var(--card); border-radius:var(--radius);
+        box-shadow:0 2px 14px rgba(111,78,55,.10); padding:8px 6px; overflow:hidden;
+      }
+      table.visits{ width:100%; border-collapse:collapse; font-size:14px; }
+      table.visits th{
+        text-align:right; color:var(--brown-dark); font-weight:800; font-size:13px;
+        padding:10px 10px; border-bottom:2px solid var(--chip-border); white-space:nowrap;
+      }
+      table.visits td{ padding:10px; border-bottom:1px solid #f0e7d3; vertical-align:top; }
+      table.visits tr:last-child td{ border-bottom:none; }
+      .shop-name{ font-weight:800; font-size:15px; }
+      .shop-sub{ color:var(--muted); font-size:12.5px; font-weight:600; }
+      .notes-line{ color:var(--muted); font-size:12.5px; margin-top:2px; }
+      .badge{
+        display:inline-block; border-radius:999px; font-size:11.5px; font-weight:800;
+        padding:2px 9px; margin-inline-start:6px; vertical-align:2px; white-space:nowrap;
+      }
+      .badge-new{ background:var(--ok-bg); color:var(--ok); border:1px solid #c4dfba; }
+      .badge-old{ background:var(--old-bg); color:var(--old); border:1px solid #e3d29b; }
+      .test-chip{
+        display:inline-block; background:var(--chip); border:1px solid var(--chip-border);
+        color:var(--brown); border-radius:999px; font-size:12px; font-weight:700;
+        padding:1px 8px; margin:1px 0 1px 4px;
+      }
+      .loc-link{ font-weight:700; text-decoration:none; border-bottom:1.5px dotted var(--brown); white-space:nowrap; }
+      .amount{ font-weight:800; color:var(--brown-dark); white-space:nowrap; }
+      .empty-box{
+        background:var(--card); border-radius:var(--radius); box-shadow:0 2px 14px rgba(111,78,55,.10);
+        padding:28px 16px; text-align:center; color:var(--muted); font-weight:700; font-size:15px;
+      }
+
+      /* ---------- التنبيهات ---------- */
+      .alert-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+      .alert-row{
+        background:var(--card); border-radius:14px; box-shadow:0 2px 10px rgba(111,78,55,.08);
+        padding:12px 14px; display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;
+      }
+      .alert-row .main{ flex:1 1 220px; }
+      .alert-row .meta{ font-size:13px; color:var(--muted); font-weight:600; }
+      .alert-row .meta b{ color:var(--ink); }
+
+      /* ---------- الفلاتر والفورمات ---------- */
+      .filters-card{ margin-bottom:14px; }
+      .filters-grid{
+        display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px;
+      }
+      .filters-grid .field{ margin-bottom:0; }
+      .toolbar-row{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px; }
+      .toolbar-row .field{ margin-bottom:0; }
+      .toolbar-row .grow{ flex:1 1 180px; }
+      .count-line{ font-weight:800; color:var(--brown-dark); margin:0 0 10px; font-size:15px; }
+      .form-card{ margin-top:16px; }
+      .form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+      .form-grid .field{ margin-bottom:0; }
+      .form-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+      .form-actions .btn{ flex:0 1 auto; padding-inline:26px; }
+      .edit-btn{
+        background:var(--chip); border:1.5px solid var(--chip-border); color:var(--brown);
+        border-radius:10px; font-weight:800; font-size:13.5px; min-height:38px; padding:6px 16px;
+      }
+
+      /* ---------- قوائم النموذج ---------- */
+      .list-section{ margin-bottom:22px; }
+      .list-section h3{ margin:0 0 8px; font-size:16px; font-weight:900; color:var(--brown-dark); }
+      .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+      .chip-item{
+        display:inline-flex; align-items:center; gap:8px;
+        border:1.5px solid var(--chip-border); background:var(--chip); color:var(--brown-dark);
+        border-radius:999px; font-weight:700; font-size:14.5px; padding:6px 8px 6px 14px; min-height:40px;
+      }
+      .chip-item .parent-tag{ font-size:12px; color:var(--muted); font-weight:700; }
+      .chip-del{
+        border:none; background:#fff; color:var(--danger); width:28px; height:28px; min-height:28px;
+        border-radius:50%; font-size:16px; font-weight:900; line-height:1; padding:0;
+        display:inline-flex; align-items:center; justify-content:center;
+      }
+      .add-row{ display:flex; gap:8px; flex-wrap:wrap; }
+      .add-row .text-input, .add-row .select-input{ flex:1 1 170px; width:auto; }
+      .add-row .btn{ min-height:44px; padding:8px 22px; font-size:15px; }
+
+      /* ---------- المودال والتوست ---------- */
+      .modal-overlay{
+        position:fixed; inset:0; background:rgba(62,47,35,.45);
+        display:flex; align-items:center; justify-content:center; padding:16px; z-index:50;
+      }
+      .modal{ max-width:400px; width:100%; }
+      .modal p{ font-size:16px; font-weight:700; margin:4px 0 18px; }
+      .modal-actions{ display:flex; gap:10px; }
+      .modal-actions .btn{ flex:1; }
+      .toast{
+        position:fixed; bottom:18px; inset-inline:0; margin:0 auto; width:fit-content; max-width:92vw;
+        background:var(--brown-dark); color:#fff; font-weight:700; font-size:14.5px;
+        border-radius:12px; padding:12px 20px; z-index:60; box-shadow:0 6px 24px rgba(0,0,0,.25);
+        text-align:center;
+      }
+
+      /* ---------- الجدول على الموبايل: كروت متراكبة ---------- */
+      @media (max-width:760px){
+        table.visits, table.visits tbody, table.visits tr, table.visits td{ display:block; width:100%; }
+        table.visits thead{ display:none; }
+        table.visits tr{ padding:10px 6px; border-bottom:1px solid #f0e7d3; }
+        table.visits tr:last-child{ border-bottom:none; }
+        table.visits td{ border-bottom:none; padding:3px 8px; }
+        table.visits td::before{
+          content:attr(data-label); display:inline-block; min-width:74px;
+          color:var(--muted); font-weight:800; font-size:12px; margin-inline-end:6px;
+        }
+        table.visits td.cell-shop::before{ content:""; display:none; }
+        .tab-btn{ font-size:13.5px; padding:8px 6px; }
+        .userbar .who{ font-size:18px; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        *{ transition:none !important; animation:none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <!-- ============ شاشة الدخول ============ -->
+      <section id="loginView">
+        <div class="card login-card">
+          <h1 class="login-title">لوحة تحكم الزيارات مصنع OSO</h1>
+          <p class="login-sub">نظام زيارات المناديب — الدخول للأدمن فقط</p>
+          <form id="loginForm" autocomplete="off">
+            <div class="field">
+              <label for="loginCode">كود الأدمن</label>
+              <input id="loginCode" class="text-input" type="password" inputmode="numeric" placeholder="اكتب كود الأدمن" />
+            </div>
+            <button id="loginBtn" class="btn btn-brown" type="submit" style="width:100%">دخول</button>
+            <div id="loginMsg" class="msg"></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ============ اللوحة ============ -->
+      <section id="appView" class="hidden">
+        <div class="userbar">
+          <div class="who">لوحة تحكم الزيارات مصنع OSO<small id="whoSub"></small></div>
+          <div class="userbar-actions">
+            <button id="refreshBtn" class="btn-small" type="button">تحديث البيانات</button>
+            <button id="logoutBtn" class="btn-small" type="button">خروج</button>
+          </div>
+        </div>
+
+        <nav class="tabs" id="tabs">
+          <button class="tab-btn active" type="button" data-tab="daily">الزيارات اليومية</button>
+          <button class="tab-btn" type="button" data-tab="alerts">التنبيهات<span id="alertBadge" class="tab-badge hidden"></span></button>
+          <button class="tab-btn" type="button" data-tab="all">كل الزيارات</button>
+          <button class="tab-btn" type="button" data-tab="reps">المناديب</button>
+          <button class="tab-btn" type="button" data-tab="lists">قوائم النموذج</button>
+        </nav>
+
+        <div id="loadMsg" class="msg"></div>
+
+        <!-- ===== الزيارات اليومية ===== -->
+        <section id="tab-daily" class="tab-page">
+          <div class="toolbar-row">
+            <div class="field grow">
+              <label for="dailyDate" style="display:block;font-weight:700;font-size:14px;margin-bottom:6px;color:var(--brown-dark)">اليوم</label>
+              <input id="dailyDate" class="text-input" type="date" />
+            </div>
+            <button id="todayBtn" class="btn btn-brown" type="button" style="min-height:44px">النهاردة</button>
+          </div>
+          <div id="dailyStats" class="stats-grid"></div>
+          <h2 class="section-title">ملخص المناديب</h2>
+          <p class="section-hint">اضغط على كارت أي مندوب عشان تشوف زياراته في اليوم ده بالتفصيل.</p>
+          <div id="dailyReps" class="rep-grid"></div>
+          <h2 class="section-title">زيارات اليوم</h2>
+          <div id="dailyTable"></div>
+        </section>
+
+        <!-- ===== التنبيهات ===== -->
+        <section id="tab-alerts" class="tab-page hidden">
+          <h2 class="section-title">عملاء قدام اتزاروا النهاردة</h2>
+          <p class="section-hint">محلات اتزارت في يوم سابق واتزارت تاني النهاردة — بالمطابقة على اسم المحل أو رقم التليفون.</p>
+          <div id="alertsOldToday" class="alert-list"></div>
+
+          <h2 class="section-title">عملاء جداد النهاردة</h2>
+          <p class="section-hint">أول زيارة للمحل ده خالص.</p>
+          <div id="alertsNewToday" class="alert-list"></div>
+
+          <h2 class="section-title">كل العملاء القدام</h2>
+          <p class="section-hint">كل المحلات اللي اتزارت أكتر من مرة من أول النظام.</p>
+          <div id="alertsAllOld" class="alert-list"></div>
+
+          <h2 class="section-title">أحدث العملاء الجداد</h2>
+          <p class="section-hint">أحدث محلات اتضافت كعملاء جداد (أول زيارة ليها).</p>
+          <div id="alertsNewest" class="alert-list"></div>
+        </section>
+
+        <!-- ===== كل الزيارات ===== -->
+        <section id="tab-all" class="tab-page hidden">
+          <div class="card filters-card">
+            <div class="filters-grid">
+              <div class="field">
+                <label for="fRep">المندوب</label>
+                <select id="fRep" class="select-input"></select>
+              </div>
+              <div class="field">
+                <label for="fFrom">من يوم</label>
+                <input id="fFrom" class="text-input" type="date" />
+              </div>
+              <div class="field">
+                <label for="fTo">لحد يوم</label>
+                <input id="fTo" class="text-input" type="date" />
+              </div>
+              <div class="field">
+                <label for="fType">نوع العميل</label>
+                <select id="fType" class="select-input"></select>
+              </div>
+              <div class="field">
+                <label for="fResult">نتيجة الزيارة</label>
+                <select id="fResult" class="select-input"></select>
+              </div>
+              <div class="field">
+                <label for="fKind">جديد ولا قديم</label>
+                <select id="fKind" class="select-input">
+                  <option value="">الكل</option>
+                  <option value="new">عميل جديد</option>
+                  <option value="old">عميل قديم</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fSearch">بحث باسم المحل أو التليفون</label>
+                <input id="fSearch" class="text-input" type="text" placeholder="اسم المحل أو رقم التليفون" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button id="fReset" class="btn btn-ghost" type="button" style="min-height:44px">مسح الفلاتر</button>
+            </div>
+          </div>
+          <p id="allCount" class="count-line"></p>
+          <div id="allTable"></div>
+        </section>
+
+        <!-- ===== المناديب ===== -->
+        <section id="tab-reps" class="tab-page hidden">
+          <div id="repsTable"></div>
+          <div class="card form-card">
+            <h2 class="section-title" id="repFormTitle" style="margin-top:0">إضافة مندوب جديد</h2>
+            <form id="repForm" autocomplete="off">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="repName">اسم المندوب *</label>
+                  <input id="repName" class="text-input" type="text" placeholder="اسم المندوب" />
+                </div>
+                <div class="field">
+                  <label for="repCode">كود الدخول *</label>
+                  <input id="repCode" class="text-input" type="text" inputmode="numeric" placeholder="كود المندوب" />
+                </div>
+                <div class="field">
+                  <label for="repLine">الخط</label>
+                  <input id="repLine" class="text-input" type="text" placeholder="خط السير" />
+                </div>
+                <div class="field">
+                  <label for="repVehicle">العربية</label>
+                  <input id="repVehicle" class="text-input" type="text" placeholder="العربية" />
+                </div>
+                <div class="field">
+                  <label for="repArea">المنطقة</label>
+                  <input id="repArea" class="text-input" type="text" placeholder="المنطقة المستهدفة" />
+                </div>
+                <div class="field">
+                  <label for="repTarget">التارجت</label>
+                  <input id="repTarget" class="text-input" type="number" min="0" step="any" placeholder="التارجت" />
+                </div>
+              </div>
+              <div id="repMsg" class="msg"></div>
+              <div class="form-actions">
+                <button id="repSave" class="btn btn-brown" type="submit">حفظ المندوب</button>
+                <button id="repCancel" class="btn btn-ghost hidden" type="button">إلغاء التعديل</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ===== قوائم النموذج ===== -->
+        <section id="tab-lists" class="tab-page hidden">
+          <p class="section-hint" style="margin-top:2px">أي تعديل هنا بيظهر على طول في نموذج الزيارات عند المناديب.</p>
+          <div id="listsWrap"></div>
+        </section>
+      </section>
+    </div>
+
+    <!-- ============ مودال التأكيد ============ -->
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <div class="modal card">
+        <p id="modalText"></p>
+        <div class="modal-actions">
+          <button id="modalYes" class="btn btn-danger" type="button">حذف</button>
+          <button id="modalNo" class="btn btn-ghost" type="button">إلغاء</button>
+        </div>
+      </div>
+    </div>
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+      "use strict";
+      var API_URL = "https://script.google.com/macros/s/AKfycbxpheAi_zMC18pjVZH5nqS-QRsK0EH0IpDxNmfv0UnG71JqtBxb9hIrQellz-UDs0ZKaw/exec";
+
+      var state = {
+        code: "",
+        user: null,
+        visits: [],      // زيارات مُثراة (بعد حساب جديد/قديم)
+        shops: [],       // محلات مجمعة
+        reps: [],
+        lists: null,
+        editingRepId: null,
+        loading: false
+      };
+
+      /* ================= أدوات ================= */
+      function $(id){ return document.getElementById(id); }
+      function esc(s){
+        return String(s === null || s === undefined ? "" : s)
+          .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+      }
+      function pad2(n){ return (n < 10 ? "0" : "") + n; }
+      function dayKeyOf(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+      function todayKey(){ return dayKeyOf(new Date()); }
+      function fmtDay(key){
+        if(!key) return "—";
+        var p = key.split("-");
+        return p[2] + "/" + p[1] + "/" + p[0];
+      }
+      function fmtMoney(n){
+        if(n === null || n === undefined || n === "" || isNaN(Number(n))) return "—";
+        return Number(n).toLocaleString("en-US") + " ج.م";
+      }
+      function fmtNum(n){ return Number(n || 0).toLocaleString("en-US"); }
+
+      // التاريخ من الشيت ممكن ييجي بصيغة yyyy-MM-dd HH:mm أو كنص تاريخ
+      // جافاسكربت كامل (Mon Nov 23 2026 05:19:00 GMT-0500 ...) — نتعامل مع الاتنين،
+      // والتجميع حسب اليوم بالتوقيت المحلي للي فاتح اللوحة.
+      function parseVisitDate(raw){
+        var s = String(raw === null || raw === undefined ? "" : raw).trim();
+        if(!s) return null;
+        var m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+        if(m){
+          return new Date(+m[1], +m[2]-1, +m[3], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+        }
+        var d = new Date(s);
+        if(!isNaN(d.getTime())) return d;
+        return null;
+      }
+
+      function normName(s){ return String(s || "").trim().replace(/\s+/g, " ").toLowerCase(); }
+      function normPhone(s){
+        var d = String(s || "").replace(/\D/g, "");
+        if(d.indexOf("002") === 0) d = d.slice(3);
+        return d;
+      }
+      function trimName(s){ return String(s || "").trim(); }
+
+      function showMsg(el, text, kind){
+        el.className = "msg" + (kind ? " " + kind : "");
+        el.textContent = text || "";
+        if(!text) el.style.display = "none"; else el.style.display = "";
+      }
+      var toastTimer = null;
+      function toast(text){
+        var t = $("toast");
+        t.textContent = text;
+        t.classList.remove("hidden");
+        if(toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ t.classList.add("hidden"); }, 3200);
+      }
+
+      /* ================= الاتصال بالخلفية ================= */
+      function apiGet(action){
+        var qs = "action=" + encodeURIComponent(action) + "&code=" + encodeURIComponent(state.code);
+        return fetch(API_URL + "?" + qs, { method: "GET" })
+          .then(function(r){ return r.text(); })
+          .then(function(t){ return JSON.parse(t); });
+      }
+      function apiPost(obj){
+        return fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(obj)
+        }).then(function(r){ return r.text(); })
+          .then(function(t){ return JSON.parse(t); });
+      }
+
+      /* ================= إثراء الزيارات: جديد / قديم ================= */
+      function enrichVisits(rawVisits){
+        var arr = (rawVisits || []).map(function(v){
+          var d = parseVisitDate(v.date);
+          var amount = (v.amount === null || v.amount === undefined || v.amount === "") ? null : Number(v.amount);
+          return {
+            id: String(v.id || ""),
+            d: d,
+            day: d ? dayKeyOf(d) : "",
+            time: d ? (pad2(d.getHours()) + ":" + pad2(d.getMinutes())) : "",
+            ts: d ? d.getTime() : 0,
+            rep: String(v.rep || ""),
+            line: String(v.line || ""),
+            vehicle: String(v.vehicle || ""),
+            area: String(v.area || ""),
+            type: String(v.type || ""),
+            cls: String(v.cls || ""),
+            name: String(v.name || ""),
+            phone: String(v.phone || ""),
+            visitNo: String(v.visitNo || ""),
+            result: String(v.result || ""),
+            tests: String(v.tests || ""),
+            amount: isNaN(amount) ? null : amount,
+            notes: String(v.notes || ""),
+            location: String(v.location || ""),
+            isNew: true,
+            preSheet: false,
+            prevCount: 0,
+            prevLast: null,
+            shop: null
+          };
+        });
+        arr.sort(function(a,b){ return a.ts - b.ts; });
+
+        var shops = [];
+        arr.forEach(function(v){
+          var nk = normName(v.name), pk = normPhone(v.phone);
+          var shop = null;
+          if(nk || pk){
+            for(var i = 0; i < shops.length; i++){
+              if((nk && shops[i].nameKeys[nk]) || (pk && shops[i].phoneKeys[pk])){ shop = shops[i]; break; }
+            }
+          }
+          if(!shop){
+            shop = { nameKeys:{}, phoneKeys:{}, visits:[], first:null, last:null,
+                     name: v.name, phone: v.phone };
+            shops.push(shop);
+          }
+          v.isNew = shop.visits.length === 0;
+          v.prevCount = shop.visits.length;
+          // تصحيح: رقم الزيارة المسجل من المندوب يغلب مطابقة الشيت —
+          // لو الزيارة مش «أول مرة» فالعميل قديم حتى لو أول ظهور له جوه الشيت
+          var vn = String(v.visitNo || "").trim();
+          if(vn && vn !== "أول مرة" && v.isNew){
+            v.isNew = false;
+            if(v.prevCount === 0) v.preSheet = true;
+          }
+          v.prevLast = shop.visits.length ? shop.visits[shop.visits.length - 1] : null;
+          v.shop = shop;
+          if(nk) shop.nameKeys[nk] = true;
+          if(pk) shop.phoneKeys[pk] = true;
+          shop.visits.push(v);
+          if(!shop.first) shop.first = v;
+          shop.last = v;
+          if(v.name) shop.name = v.name;
+          if(v.phone) shop.phone = v.phone;
+        });
+
+        state.visits = arr;
+        state.shops = shops;
+      }
+
+      /* ================= تحميل البيانات ================= */
+      function loadAll(silent){
+        if(state.loading) return Promise.resolve();
+        state.loading = true;
+        $("refreshBtn").disabled = true;
+        if(!silent) showMsg($("loadMsg"), "جارٍ تحميل البيانات…", "info");
+        return Promise.all([
+          apiGet("visits2"),
+          apiGet("reps"),
+          apiGet("formLists")
+        ]).then(function(res){
+          var vRes = res[0], rRes = res[1], lRes = res[2];
+          if(!vRes || !vRes.ok) throw new Error((vRes && vRes.error) || "visits");
+          if(!rRes || !rRes.ok) throw new Error((rRes && rRes.error) || "reps");
+          if(!lRes || !lRes.ok) throw new Error((lRes && lRes.error) || "lists");
+          enrichVisits(vRes.visits || []);
+          state.reps = rRes.reps || [];
+          state.lists = lRes;
+          showMsg($("loadMsg"), "", "");
+          renderAll();
+        }).catch(function(err){
+          showMsg($("loadMsg"), "حصلت مشكلة في تحميل البيانات. اتأكد من الاتصال واضغط «تحديث البيانات».", "err");
+        }).then(function(){
+          state.loading = false;
+          $("refreshBtn").disabled = false;
+        });
+      }
+
+      function reloadLists(){
+        return apiGet("formLists").then(function(res){
+          if(res && res.ok){ state.lists = res; renderLists(); renderFilterOptions(); }
+        });
+      }
+      function reloadRepsAndVisits(){
+        return Promise.all([apiGet("reps"), apiGet("visits2")]).then(function(res){
+          if(res[0] && res[0].ok) state.reps = res[0].reps || [];
+          if(res[1] && res[1].ok) enrichVisits(res[1].visits || []);
+          renderAll();
+        });
+      }
+
+      /* ================= عرض الزيارات ================= */
+      function badgeHtml(v){
+        if(v.isNew) return '<span class="badge badge-new">عميل جديد</span>';
+        if(v.preSheet) return '<span class="badge badge-old">عميل قديم (قبل الشيت)</span>';
+        return '<span class="badge badge-old">عميل قديم</span>';
+      }
+      function testsHtml(tests){
+        var parts = String(tests || "").split(/[,،]/).map(function(x){ return x.trim(); }).filter(Boolean);
+        if(!parts.length) return '<span style="color:var(--muted)">—</span>';
+        return parts.map(function(p){ return '<span class="test-chip">' + esc(p) + '</span>'; }).join("");
+      }
+      function locHtml(loc){
+        var s = String(loc || "").trim();
+        if(!s) return '<span style="color:var(--muted)">—</span>';
+        var url = null;
+        if(/^https?:\/\//i.test(s)) url = s;
+        else {
+          var m = s.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+          if(m) url = "https://www.google.com/maps?q=" + m[1] + "," + m[2];
+        }
+        if(url) return '<a class="loc-link" href="' + esc(url) + '" target="_blank" rel="noopener">الخريطة</a>';
+        return esc(s);
+      }
+      function visitRowHtml(v, showDate){
+        var typeCls = v.type + (v.cls ? " — " + v.cls : "");
+        return "<tr>" +
+          "<td data-label='الوقت'>" + esc(showDate ? (fmtDay(v.day) + (v.time ? " " + v.time : "")) : (v.time || "—")) + "</td>" +
+          "<td data-label='المندوب'>" + esc(trimName(v.rep) || "—") + "</td>" +
+          "<td class='cell-shop'><div class='shop-name'>" + esc(v.name || "—") + badgeHtml(v) + "</div>" +
+            (v.phone ? "<div class='shop-sub'>" + esc(v.phone) + "</div>" : "") +
+            (v.notes ? "<div class='notes-line'>" + esc(v.notes) + "</div>" : "") + "</td>" +
+          "<td data-label='النوع'>" + esc(typeCls || "—") + "</td>" +
+          "<td data-label='رقم الزيارة'>" + esc(v.visitNo || "—") + "</td>" +
+          "<td data-label='النتيجة'>" + esc(v.result || "—") + "</td>" +
+          "<td data-label='التيستات'>" + testsHtml(v.tests) + "</td>" +
+          "<td data-label='قيمة الطلب'><span class='amount'>" + fmtMoney(v.amount) + "</span></td>" +
+          "<td data-label='الموقع'>" + locHtml(v.location) + "</td>" +
+        "</tr>";
+      }
+      function visitsTableHtml(list, showDate){
+        if(!list.length) return '<div class="empty-box">مفيش زيارات مطابقة.</div>';
+        var rows = list.map(function(v){ return visitRowHtml(v, showDate); }).join("");
+        return '<div class="table-card"><table class="visits"><thead><tr>' +
+          "<th>" + (showDate ? "التاريخ" : "الوقت") + "</th><th>المندوب</th><th>المحل</th><th>نوع العميل</th>" +
+          "<th>رقم الزيارة</th><th>النتيجة</th><th>التيستات</th><th>قيمة الطلب</th><th>الموقع</th>" +
+          "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+      }
+      function byTsDesc(a, b){ return b.ts - a.ts; }
+
+      /* ================= التبويب اليومي ================= */
+      function renderDaily(){
+        var day = $("dailyDate").value || todayKey();
+        var list = state.visits.filter(function(v){ return v.day === day; }).sort(byTsDesc);
+        var newCount = list.filter(function(v){ return v.isNew; }).length;
+        var repsActive = {};
+        var totalAmount = 0;
+        list.forEach(function(v){
+          repsActive[trimName(v.rep)] = true;
+          if(v.amount) totalAmount += v.amount;
+        });
+
+        $("dailyStats").innerHTML =
+          statCard(fmtNum(list.length), "إجمالي الزيارات", "") +
+          statCard(fmtNum(newCount), "عملاء جداد", "green") +
+          statCard(fmtNum(list.length - newCount), "عملاء قدام", "amber") +
+          statCard(fmtMoney(totalAmount), "إجمالي قيمة الطلبات", "") +
+          statCard(fmtNum(Object.keys(repsActive).length), "مناديب اشتغلوا", "");
+
+        // ملخص لكل مندوب (من قائمة المناديب الرسمية)
+        var html = "";
+        state.reps.forEach(function(r){
+          var rn = trimName(r.name);
+          var mine = list.filter(function(v){ return trimName(v.rep) === rn; });
+          var nNew = mine.filter(function(v){ return v.isNew; }).length;
+          var sum = 0;
+          mine.forEach(function(v){ if(v.amount) sum += v.amount; });
+          html += '<button type="button" class="rep-card' + (mine.length ? "" : " idle") + '" data-rep="' + esc(rn) + '">' +
+            '<div class="rname">' + esc(rn) + "</div>" +
+            '<div class="rrow"><span>زيارات</span><b>' + fmtNum(mine.length) + "</b></div>" +
+            '<div class="rrow"><span>جديد</span><b>' + fmtNum(nNew) + "</b></div>" +
+            '<div class="rrow"><span>قديم</span><b>' + fmtNum(mine.length - nNew) + "</b></div>" +
+            '<div class="rtotal"><span>قيمة الطلبات</span><span>' + fmtMoney(sum) + "</span></div>" +
+          "</button>";
+        });
+        // مناديب ظهروا في الزيارات ومش في قائمة المناديب الحالية
+        var known = {};
+        state.reps.forEach(function(r){ known[trimName(r.name)] = true; });
+        var extra = {};
+        list.forEach(function(v){ var rn = trimName(v.rep); if(rn && !known[rn]) extra[rn] = true; });
+        Object.keys(extra).forEach(function(rn){
+          var mine = list.filter(function(v){ return trimName(v.rep) === rn; });
+          var sum = 0;
+          mine.forEach(function(v){ if(v.amount) sum += v.amount; });
+          html += '<div class="rep-card"><div class="rname">' + esc(rn) + "</div>" +
+            '<div class="rrow"><span>زيارات</span><b>' + fmtNum(mine.length) + "</b></div>" +
+            '<div class="rtotal"><span>قيمة الطلبات</span><span>' + fmtMoney(sum) + "</span></div></div>";
+        });
+        $("dailyReps").innerHTML = html || '<div class="empty-box">مفيش مناديب مسجلين.</div>';
+
+        $("dailyTable").innerHTML = visitsTableHtml(list, false);
+      }
+      function statCard(num, lbl, cls){
+        return '<div class="stat-card ' + cls + '"><div class="num">' + num + '</div><div class="lbl">' + lbl + "</div></div>";
+      }
+
+      /* ================= التنبيهات ================= */
+      function renderAlerts(){
+        var tk = todayKey();
+        var todayList = state.visits.filter(function(v){ return v.day === tk; });
+        var oldToday = todayList.filter(function(v){ return !v.isNew; }).sort(byTsDesc);
+        var newToday = todayList.filter(function(v){ return v.isNew; }).sort(byTsDesc);
+
+        var badge = $("alertBadge");
+        var total = oldToday.length + newToday.length;
+        if(total > 0){ badge.textContent = fmtNum(total); badge.classList.remove("hidden"); }
+        else badge.classList.add("hidden");
+
+        $("alertsOldToday").innerHTML = oldToday.length ? oldToday.map(function(v){
+          return '<div class="alert-row"><div class="main">' +
+            '<span class="shop-name">' + esc(v.name || "—") + "</span>" + badgeHtml(v) +
+            '<div class="meta">المندوب: <b>' + esc(trimName(v.rep) || "—") + "</b> · الساعة " + esc(v.time || "—") +
+            (v.phone ? " · " + esc(v.phone) : "") + "</div>" +
+            (v.preSheet
+              ? '<div class="meta">عميل قديم من قبل الشيت — رقم الزيارة المسجل: <b>' + esc(v.visitNo || "—") + "</b></div>"
+              : '<div class="meta">اتزار قبل كده <b>' + fmtNum(v.prevCount) + "</b> مرة" +
+                (v.prevLast ? " — آخر زيارة سابقة: <b>" + fmtDay(v.prevLast.day) + "</b>" : "") + "</div>") +
+            "</div></div>";
+        }).join("") : '<div class="empty-box">مفيش عملاء قدام اتزاروا النهاردة.</div>';
+
+        $("alertsNewToday").innerHTML = newToday.length ? newToday.map(function(v){
+          return '<div class="alert-row"><div class="main">' +
+            '<span class="shop-name">' + esc(v.name || "—") + "</span>" + badgeHtml(v) +
+            '<div class="meta">المندوب: <b>' + esc(trimName(v.rep) || "—") + "</b> · الساعة " + esc(v.time || "—") +
+            (v.phone ? " · " + esc(v.phone) : "") +
+            (v.type ? " · " + esc(v.type) : "") + "</div>" +
+            "</div></div>";
+        }).join("") : '<div class="empty-box">مفيش عملاء جداد النهاردة.</div>';
+
+        var oldShops = state.shops.filter(function(s){ return s.visits.length > 1; })
+          .sort(function(a,b){ return b.last.ts - a.last.ts; });
+        $("alertsAllOld").innerHTML = oldShops.length ? oldShops.map(function(s){
+          var repsSet = {};
+          s.visits.forEach(function(v){ var rn = trimName(v.rep); if(rn) repsSet[rn] = true; });
+          return '<div class="alert-row"><div class="main">' +
+            '<span class="shop-name">' + esc(s.name || "—") + "</span>" +
+            '<span class="badge badge-old">عميل قديم</span>' +
+            '<div class="meta">عدد الزيارات: <b>' + fmtNum(s.visits.length) + "</b>" +
+            (s.phone ? " · " + esc(s.phone) : "") + "</div>" +
+            '<div class="meta">أول زيارة: <b>' + fmtDay(s.first.day) + "</b> · آخر زيارة: <b>" + fmtDay(s.last.day) + "</b></div>" +
+            '<div class="meta">المناديب: <b>' + esc(Object.keys(repsSet).join("، ") || "—") + "</b></div>" +
+            "</div></div>";
+        }).join("") : '<div class="empty-box">مفيش عملاء قدام لسه — كل المحلات اتزارت مرة واحدة.</div>';
+
+        var newest = state.shops.slice().sort(function(a,b){ return b.first.ts - a.first.ts; }).slice(0, 20);
+        $("alertsNewest").innerHTML = newest.length ? newest.map(function(s){
+          return '<div class="alert-row"><div class="main">' +
+            '<span class="shop-name">' + esc(s.name || "—") + "</span>" +
+            (s.visits.length > 1
+              ? '<span class="badge badge-old">بقى قديم — ' + fmtNum(s.visits.length) + ' زيارات</span>'
+              : (s.first.isNew ? '<span class="badge badge-new">عميل جديد</span>' : '<span class="badge badge-old">عميل قديم (قبل الشيت)</span>')) +
+            '<div class="meta">أول زيارة: <b>' + fmtDay(s.first.day) + "</b> · المندوب: <b>" + esc(trimName(s.first.rep) || "—") + "</b>" +
+            (s.phone ? " · " + esc(s.phone) : "") + "</div>" +
+            "</div></div>";
+        }).join("") : '<div class="empty-box">مفيش زيارات مسجلة لسه.</div>';
+      }
+
+      /* ================= كل الزيارات ================= */
+      function renderFilterOptions(){
+        var repSel = $("fRep");
+        var curRep = repSel.value;
+        var opts = '<option value="">كل المناديب</option>';
+        state.reps.forEach(function(r){
+          var rn = trimName(r.name);
+          opts += '<option value="' + esc(rn) + '">' + esc(rn) + "</option>";
+        });
+        repSel.innerHTML = opts;
+        if(curRep) repSel.value = curRep;
+
+        var typeSel = $("fType");
+        var curType = typeSel.value;
+        var tOpts = '<option value="">كل الأنواع</option>';
+        if(state.lists && state.lists.types){
+          state.lists.types.forEach(function(t){
+            tOpts += '<option value="' + esc(t.name) + '">' + esc(t.name) + "</option>";
+          });
+        }
+        typeSel.innerHTML = tOpts;
+        if(curType) typeSel.value = curType;
+
+        var resSel = $("fResult");
+        var curRes = resSel.value;
+        var rOpts = '<option value="">كل النتائج</option>';
+        if(state.lists && state.lists.results){
+          state.lists.results.forEach(function(r){
+            rOpts += '<option value="' + esc(r) + '">' + esc(r) + "</option>";
+          });
+        }
+        resSel.innerHTML = rOpts;
+        if(curRes) resSel.value = curRes;
+      }
+      function renderAllVisits(){
+        var rep = $("fRep").value;
+        var from = $("fFrom").value;
+        var to = $("fTo").value;
+        var type = $("fType").value;
+        var result = $("fResult").value;
+        var kind = $("fKind").value;
+        var q = normName($("fSearch").value);
+        var qPhone = normPhone($("fSearch").value);
+
+        var list = state.visits.filter(function(v){
+          if(rep && trimName(v.rep) !== rep) return false;
+          if(from && v.day < from) return false;
+          if(to && v.day > to) return false;
+          if(type && v.type !== type) return false;
+          if(result && v.result !== result) return false;
+          if(kind === "new" && !v.isNew) return false;
+          if(kind === "old" && v.isNew) return false;
+          if(q){
+            var inName = normName(v.name).indexOf(q) !== -1;
+            var inPhone = qPhone && normPhone(v.phone).indexOf(qPhone) !== -1;
+            if(!inName && !inPhone) return false;
+          }
+          return true;
+        }).sort(byTsDesc);
+
+        var sum = 0;
+        list.forEach(function(v){ if(v.amount) sum += v.amount; });
+        $("allCount").textContent = "عدد الزيارات: " + fmtNum(list.length) + " · إجمالي قيمة الطلبات: " + fmtMoney(sum);
+        $("allTable").innerHTML = visitsTableHtml(list, true);
+      }
+
+      /* ================= المناديب ================= */
+      function renderReps(){
+        if(!state.reps.length){
+          $("repsTable").innerHTML = '<div class="empty-box">مفيش مناديب مسجلين.</div>';
+          return;
+        }
+        var rows = state.reps.map(function(r){
+          return "<tr>" +
+            "<td class='cell-shop'><span class='shop-name'>" + esc(trimName(r.name)) + "</span></td>" +
+            "<td data-label='الخط'>" + esc(r.line || "—") + "</td>" +
+            "<td data-label='العربية'>" + esc(r.vehicle || "—") + "</td>" +
+            "<td data-label='المنطقة'>" + esc(r.area || "—") + "</td>" +
+            "<td data-label='التارجت'>" + (r.target === null || r.target === undefined ? "—" : fmtMoney(r.target)) + "</td>" +
+            "<td data-label=''><button type='button' class='edit-btn' data-edit-rep='" + esc(r.id) + "'>تعديل</button></td>" +
+          "</tr>";
+        }).join("");
+        $("repsTable").innerHTML = '<div class="table-card"><table class="visits"><thead><tr>' +
+          "<th>المندوب</th><th>الخط</th><th>العربية</th><th>المنطقة</th><th>التارجت</th><th></th>" +
+          "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+      }
+      function resetRepForm(){
+        state.editingRepId = null;
+        $("repFormTitle").textContent = "إضافة مندوب جديد";
+        $("repSave").textContent = "حفظ المندوب";
+        $("repCancel").classList.add("hidden");
+        ["repName","repCode","repLine","repVehicle","repArea","repTarget"].forEach(function(id){ $(id).value = ""; });
+        $("repCode").placeholder = "كود المندوب";
+        showMsg($("repMsg"), "", "");
+      }
+      function editRep(id){
+        var r = null;
+        state.reps.forEach(function(x){ if(x.id === id) r = x; });
+        if(!r) return;
+        state.editingRepId = r.id;
+        $("repFormTitle").textContent = "تعديل: " + trimName(r.name);
+        $("repSave").textContent = "حفظ التعديل";
+        $("repCancel").classList.remove("hidden");
+        $("repName").value = trimName(r.name);
+        // أكواد المناديب مش بترجع من الخادم — الأدمن بيكتب كود المندوب بنفسه عند التعديل
+        $("repCode").value = "";
+        $("repCode").placeholder = "اكتب كود المندوب الحالي أو كود جديد";
+        $("repLine").value = r.line || "";
+        $("repVehicle").value = r.vehicle || "";
+        $("repArea").value = r.area || "";
+        $("repTarget").value = (r.target === null || r.target === undefined) ? "" : r.target;
+        showMsg($("repMsg"), "ملحوظة: أكواد الدخول مش بتظهر من الخادم — اكتب كود المندوب الحالي (أو كود جديد لو عايز تغيّره) في خانة الكود عشان الحفظ يكمل.", "info");
+        $("repName").focus();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+
+      /* ================= قوائم النموذج ================= */
+      var LIST_SECTIONS = [
+        { key: "type",    title: "أنواع العميل" },
+        { key: "class",   title: "الفئات (حسب نوع العميل)" },
+        { key: "visitNo", title: "أرقام الزيارة" },
+        { key: "result",  title: "نتائج الزيارة" },
+        { key: "test",    title: "التيستات" }
+      ];
+      function renderLists(){
+        var wrap = $("listsWrap");
+        if(!state.lists || !state.lists.items){
+          wrap.innerHTML = '<div class="empty-box">القوائم لسه محمّلتش.</div>';
+          return;
+        }
+        var items = state.lists.items;
+        var typeNames = (state.lists.types || []).map(function(t){ return t.name; });
+
+        wrap.innerHTML = LIST_SECTIONS.map(function(sec){
+          var secItems = items.filter(function(i){ return i.section === sec.key; });
+          var chips = secItems.length ? secItems.map(function(i){
+            return '<span class="chip-item">' + esc(i.name) +
+              (sec.key === "class" && i.parent ? '<span class="parent-tag">(' + esc(i.parent) + ")</span>" : "") +
+              '<button type="button" class="chip-del" data-del-item="' + esc(i.id) + '" data-del-name="' + esc(i.name) + '" aria-label="حذف ' + esc(i.name) + '">×</button></span>';
+          }).join("") : '<span style="color:var(--muted);font-weight:600">القسم فاضي.</span>';
+
+          var parentSelect = "";
+          if(sec.key === "class"){
+            parentSelect = '<select class="select-input" id="addParent-class">' +
+              typeNames.map(function(t){ return '<option value="' + esc(t) + '">' + esc(t) + "</option>"; }).join("") +
+              "</select>";
+          }
+          return '<div class="list-section card" style="margin-bottom:14px">' +
+            "<h3>" + esc(sec.title) + "</h3>" +
+            '<div class="chips">' + chips + "</div>" +
+            '<div class="add-row">' +
+              '<input class="text-input" type="text" id="addInput-' + sec.key + '" placeholder="إضافة جديد في «' + esc(sec.title) + '»" />' +
+              parentSelect +
+              '<button type="button" class="btn btn-brown" data-add-section="' + sec.key + '">إضافة</button>' +
+            "</div>" +
+          "</div>";
+        }).join("");
+      }
+
+      /* ================= مودال التأكيد ================= */
+      var modalCb = null;
+      function askConfirm(text, cb){
+        $("modalText").textContent = text;
+        modalCb = cb;
+        $("modalOverlay").classList.remove("hidden");
+      }
+      $("modalNo").addEventListener("click", function(){
+        $("modalOverlay").classList.add("hidden");
+        modalCb = null;
+      });
+      $("modalYes").addEventListener("click", function(){
+        $("modalOverlay").classList.add("hidden");
+        if(modalCb){ var cb = modalCb; modalCb = null; cb(); }
+      });
+
+      /* ================= التهيئة والأحداث ================= */
+      function renderAll(){
+        renderDaily();
+        renderAlerts();
+        renderFilterOptions();
+        renderAllVisits();
+        renderReps();
+        renderLists();
+      }
+      function switchTab(name){
+        var btns = document.querySelectorAll(".tab-btn");
+        btns.forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-tab") === name); });
+        ["daily","alerts","all","reps","lists"].forEach(function(t){
+          $("tab-" + t).classList.toggle("hidden", t !== name);
+        });
+      }
+      $("tabs").addEventListener("click", function(e){
+        var btn = e.target.closest(".tab-btn");
+        if(btn) switchTab(btn.getAttribute("data-tab"));
+      });
+
+      $("dailyDate").value = todayKey();
+      $("dailyDate").addEventListener("change", renderDaily);
+      $("todayBtn").addEventListener("click", function(){
+        $("dailyDate").value = todayKey();
+        renderDaily();
+      });
+      $("dailyReps").addEventListener("click", function(e){
+        var card = e.target.closest("[data-rep]");
+        if(!card) return;
+        var rn = card.getAttribute("data-rep");
+        var day = $("dailyDate").value || todayKey();
+        renderFilterOptions();
+        $("fRep").value = rn;
+        $("fFrom").value = day;
+        $("fTo").value = day;
+        renderAllVisits();
+        switchTab("all");
+      });
+
+      ["fRep","fFrom","fTo","fType","fResult","fKind"].forEach(function(id){
+        $(id).addEventListener("change", renderAllVisits);
+      });
+      $("fSearch").addEventListener("input", renderAllVisits);
+      $("fReset").addEventListener("click", function(){
+        ["fRep","fType","fResult","fKind"].forEach(function(id){ $(id).value = ""; });
+        $("fFrom").value = ""; $("fTo").value = ""; $("fSearch").value = "";
+        renderAllVisits();
+      });
+
+      $("repsTable").addEventListener("click", function(e){
+        var btn = e.target.closest("[data-edit-rep]");
+        if(btn) editRep(btn.getAttribute("data-edit-rep"));
+      });
+      $("repCancel").addEventListener("click", resetRepForm);
+      $("repForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        var name = $("repName").value.trim();
+        var code = $("repCode").value.trim();
+        if(!name || !code){
+          showMsg($("repMsg"), "اسم المندوب وكود الدخول لازم يتكتبوا.", "err");
+          return;
+        }
+        var targetVal = $("repTarget").value.trim();
+        var rep = {
+          name: name,
+          code: code,
+          line: $("repLine").value.trim(),
+          vehicle: $("repVehicle").value.trim(),
+          area: $("repArea").value.trim(),
+          target: targetVal === "" ? "" : Number(targetVal)
+        };
+        if(state.editingRepId) rep.id = state.editingRepId;
+        $("repSave").disabled = true;
+        apiPost({ action: "upsertRep", adminCode: state.code, rep: rep })
+          .then(function(res){
+            if(!res || !res.ok) throw new Error((res && res.error) || "");
+            toast(state.editingRepId ? "اتحفظ تعديل المندوب." : "اتضاف المندوب الجديد.");
+            resetRepForm();
+            return reloadRepsAndVisits();
+          })
+          .catch(function(){
+            showMsg($("repMsg"), "الحفظ منفعش. اتأكد من الاتصال وحاول تاني.", "err");
+          })
+          .then(function(){ $("repSave").disabled = false; });
+      });
+
+      $("listsWrap").addEventListener("click", function(e){
+        var del = e.target.closest("[data-del-item]");
+        if(del){
+          var id = del.getAttribute("data-del-item");
+          var nm = del.getAttribute("data-del-name");
+          askConfirm("حذف «" + nm + "» من قوائم النموذج؟ الحذف بيتم من الشيت نفسه ومش بيتلغي.", function(){
+            apiPost({ action: "deleteFormItem", code: state.code, id: id })
+              .then(function(res){
+                if(!res || !res.ok) throw new Error("");
+                toast("اتحذف «" + nm + "».");
+                return reloadLists();
+              })
+              .catch(function(){ toast("الحذف منفعش. حاول تاني."); });
+          });
+          return;
+        }
+        var add = e.target.closest("[data-add-section]");
+        if(add){
+          var sec = add.getAttribute("data-add-section");
+          var input = $("addInput-" + sec);
+          var name = input.value.trim();
+          if(!name){ input.focus(); return; }
+          var item = { section: sec, name: name, parent: "" };
+          if(sec === "class"){
+            var sel = $("addParent-class");
+            item.parent = sel ? sel.value : "";
+            if(!item.parent){ toast("لازم تختار نوع العميل الأب للفئة."); return; }
+          }
+          add.disabled = true;
+          apiPost({ action: "upsertFormItem", code: state.code, item: item })
+            .then(function(res){
+              if(!res || !res.ok) throw new Error("");
+              toast("اتضاف «" + name + "».");
+              return reloadLists();
+            })
+            .catch(function(){ toast("الإضافة منفعتش. حاول تاني."); })
+            .then(function(){ add.disabled = false; });
+        }
+      });
+      $("listsWrap").addEventListener("keydown", function(e){
+        if(e.key === "Enter" && e.target && e.target.id && e.target.id.indexOf("addInput-") === 0){
+          e.preventDefault();
+          var sec = e.target.id.replace("addInput-", "");
+          var btn = document.querySelector('[data-add-section="' + sec + '"]');
+          if(btn) btn.click();
+        }
+      });
+
+      $("refreshBtn").addEventListener("click", function(){ loadAll(false); });
+      $("logoutBtn").addEventListener("click", function(){
+        state.code = "";
+        state.user = null;
+        state.visits = []; state.shops = []; state.reps = []; state.lists = null;
+        $("appView").classList.add("hidden");
+        $("loginView").classList.remove("hidden");
+        $("loginCode").value = "";
+        showMsg($("loginMsg"), "", "");
+      });
+
+      $("loginForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        var code = $("loginCode").value.trim();
+        if(!code){ showMsg($("loginMsg"), "اكتب كود الأدمن الأول.", "err"); return; }
+        $("loginBtn").disabled = true;
+        showMsg($("loginMsg"), "جارٍ التحقق…", "info");
+        state.code = code;
+        apiGet("login").then(function(res){
+          if(!res || !res.ok || !res.user){
+            state.code = "";
+            showMsg($("loginMsg"), "الكود غلط. حاول تاني.", "err");
+            return;
+          }
+          if(res.user.role !== "admin"){
+            state.code = "";
+            showMsg($("loginMsg"), "اللوحة دي للأدمن فقط — الكود ده كود مندوب.", "err");
+            return;
+          }
+          state.user = res.user;
+          $("whoSub").textContent = "أهلًا " + (res.user.name || "أدمن") + " — كل البيانات من شيت «زيارات المناديب» مباشرة";
+          $("loginView").classList.add("hidden");
+          $("appView").classList.remove("hidden");
+          showMsg($("loginMsg"), "", "");
+          loadAll(false);
+        }).catch(function(){
+          state.code = "";
+          showMsg($("loginMsg"), "مش قادر أوصل للخادم. اتأكد من الاتصال وحاول تاني.", "err");
+        }).then(function(){ $("loginBtn").disabled = false; });
+      });
+    </script>
+  </body>
+</html>
