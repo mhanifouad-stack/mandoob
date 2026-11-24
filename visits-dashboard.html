@@ -173,6 +173,21 @@
       }
       .loc-link{ font-weight:700; text-decoration:none; border-bottom:1.5px dotted var(--brown); white-space:nowrap; }
       .amount{ font-weight:800; color:var(--brown-dark); white-space:nowrap; }
+      .visit-clickable{ cursor:pointer; }
+      table.visits tr.visit-clickable:hover td{ background:#fffaf0; }
+      table.visits tr.visit-clickable:focus-visible{ outline:2px solid var(--brown); outline-offset:-2px; }
+      .alert-row.visit-clickable{ transition:box-shadow .15s ease, border-color .15s ease; border:1.5px solid transparent; }
+      .alert-row.visit-clickable:hover{ border-color:var(--chip-border); box-shadow:0 4px 16px rgba(111,78,55,.14); }
+      .alert-row.visit-clickable:focus-visible{ outline:2px solid var(--brown); outline-offset:2px; }
+      .details-hint{ display:inline-block; margin-top:5px; color:var(--brown); font-weight:800; font-size:12.5px; }
+      .details-hint::after{ content:" ←"; font-weight:900; }
+      /* زيارة لسه الأدمن مفتحش تفاصيلها: أحمر فاتح واسم محل أحمر عريض */
+      table.visits tr.visit-unseen{ background:#fdf0ee; }
+      table.visits tr.visit-unseen td{ background:#fdf0ee; }
+      table.visits tr.visit-unseen:hover td{ background:var(--danger-bg); }
+      .visit-unseen .shop-name{ color:var(--danger) !important; font-weight:900; }
+      .alert-row.visit-unseen{ background:var(--danger-bg); }
+      .alert-row.visit-unseen:hover{ border-color:#eec5bb; }
       .empty-box{
         background:var(--card); border-radius:var(--radius); box-shadow:0 2px 14px rgba(111,78,55,.10);
         padding:28px 16px; text-align:center; color:var(--muted); font-weight:700; font-size:15px;
@@ -227,6 +242,31 @@
       .add-row .text-input, .add-row .select-input{ flex:1 1 170px; width:auto; }
       .add-row .btn{ min-height:44px; padding:8px 22px; font-size:15px; }
 
+      /* ---------- مفتاح تفعيل حقل قيمة الطلب ---------- */
+      .setting-toggle-card{ margin-bottom:14px; }
+      .setting-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+      .setting-toggle-text{ flex:1 1 auto; }
+      .setting-toggle-title{ font-size:16px; font-weight:900; color:var(--brown-dark); margin:0 0 4px; }
+      .setting-toggle-hint{ color:var(--muted); font-size:13px; font-weight:600; margin:0; line-height:1.7; }
+      .switch{ position:relative; display:inline-block; width:58px; height:32px; flex:0 0 auto; }
+      .switch input{ position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; z-index:2; }
+      .switch-slider{
+        position:absolute; inset:0; border-radius:999px;
+        background:#e4d9c3; border:1.5px solid var(--chip-border);
+        transition:background .2s ease, border-color .2s ease;
+      }
+      .switch-slider::before{
+        content:""; position:absolute; top:3px; inset-inline-start:3px;
+        width:24px; height:24px; border-radius:50%;
+        background:#fff; box-shadow:0 1px 5px rgba(62,47,35,.28);
+        transition:transform .2s ease;
+      }
+      .switch input:checked + .switch-slider{ background:var(--brown); border-color:var(--brown); }
+      .switch input:checked + .switch-slider::before{ transform:translateX(-26px); }
+      .switch input:focus-visible + .switch-slider{ outline:2px solid var(--brown); outline-offset:2px; }
+      .switch input:disabled{ cursor:default; }
+      .switch input:disabled + .switch-slider{ opacity:.55; }
+
       /* ---------- المودال والتوست ---------- */
       .modal-overlay{
         position:fixed; inset:0; background:rgba(62,47,35,.45);
@@ -236,6 +276,38 @@
       .modal p{ font-size:16px; font-weight:700; margin:4px 0 18px; }
       .modal-actions{ display:flex; gap:10px; }
       .modal-actions .btn{ flex:1; }
+      .visit-modal{ max-width:540px; width:100%; max-height:92vh; overflow-y:auto; padding:0; }
+      .visit-modal-head{
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        padding:16px 18px 12px; border-bottom:1px solid #f0e7d3;
+        position:sticky; top:0; background:var(--card); z-index:2;
+      }
+      .visit-modal-head h2{ margin:0; font-size:20px; font-weight:900; color:var(--brown-dark); }
+      .visit-modal-close{
+        border:1.5px solid var(--chip-border); background:var(--chip); color:var(--brown-dark);
+        width:38px; height:38px; min-height:38px; border-radius:50%; font-size:20px; font-weight:900;
+        line-height:1; padding:0; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+      }
+      .visit-modal-body{ padding:14px 18px 18px; }
+      .visit-modal-shop{ font-size:19px; font-weight:900; color:var(--brown-dark); margin:0 0 4px; }
+      .detail-row{
+        display:flex; justify-content:space-between; align-items:flex-start; gap:14px;
+        padding:8px 0; border-bottom:1px dashed #eadfc6; font-size:14.5px;
+      }
+      .detail-row:last-of-type{ border-bottom:none; }
+      .detail-row .d-label{ color:var(--muted); font-weight:800; white-space:nowrap; }
+      .detail-row .d-value{ font-weight:700; color:var(--ink); text-align:left; overflow-wrap:anywhere; }
+      .detail-row .d-value a{ font-weight:800; }
+      .amount-box{
+        background:var(--chip); border:1.5px solid var(--chip-border); border-radius:14px;
+        padding:12px 14px; text-align:center; margin:12px 0 4px;
+      }
+      .amount-box .a-label{ font-size:13px; font-weight:800; color:var(--muted); margin-bottom:2px; }
+      .amount-box .a-value{ font-size:26px; font-weight:900; color:var(--brown-dark); line-height:1.2; }
+      .loc-missing{ color:var(--muted); font-weight:700; font-size:14px; padding:6px 0 2px; }
+      .map-btn{ display:block; text-align:center; text-decoration:none; margin-top:8px; line-height:28px; }
+      .visit-modal-actions{ padding:0 18px 18px; }
+      .visit-modal-actions .btn{ width:100%; }
       .toast{
         position:fixed; bottom:18px; inset-inline:0; margin:0 auto; width:fit-content; max-width:92vw;
         background:var(--brown-dark); color:#fff; font-weight:700; font-size:14.5px;
@@ -438,10 +510,36 @@
 
         <!-- ===== قوائم النموذج ===== -->
         <section id="tab-lists" class="tab-page hidden">
+          <div class="card setting-toggle-card">
+            <div class="setting-toggle-row">
+              <div class="setting-toggle-text">
+                <div class="setting-toggle-title">حقل قيمة الطلب (الأوردرات) في نموذج الزيارة</div>
+                <p class="setting-toggle-hint">لما تفعّله الحقل بيظهر عند المندوب في النموذج، ولما تقفله بيختفي خالص</p>
+              </div>
+              <label class="switch" aria-label="حقل قيمة الطلب (الأوردرات) في نموذج الزيارة">
+                <input type="checkbox" id="orderAmountToggle" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
           <p class="section-hint" style="margin-top:2px">أي تعديل هنا بيظهر على طول في نموذج الزيارات عند المناديب.</p>
           <div id="listsWrap"></div>
         </section>
       </section>
+    </div>
+
+    <!-- ============ مودال تفاصيل الزيارة (عرض فقط) ============ -->
+    <div id="visitOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="visitModalTitle">
+      <div class="visit-modal card">
+        <div class="visit-modal-head">
+          <h2 id="visitModalTitle">تفاصيل الزيارة</h2>
+          <button id="visitModalX" class="visit-modal-close" type="button" aria-label="إغلاق">×</button>
+        </div>
+        <div id="visitModalBody" class="visit-modal-body"></div>
+        <div class="visit-modal-actions">
+          <button id="visitModalClose" class="btn btn-brown" type="button">إغلاق</button>
+        </div>
+      </div>
     </div>
 
     <!-- ============ مودال التأكيد ============ -->
@@ -578,6 +676,7 @@
           };
         });
         arr.sort(function(a,b){ return a.ts - b.ts; });
+        arr.forEach(function(v, i){ v._idx = i; });
 
         var shops = [];
         arr.forEach(function(v){
@@ -709,6 +808,43 @@
         updateNotifBadge();
       }
 
+      /* ================= الزيارات المفتوحة (تفاصيل اتشافت) ================= */
+      // معرّفات الزيارات اللي الأدمن فتح تفاصيلها بتتحفظ في localStorage
+      // بمفتاح osoDashSeenVisits — أي زيارة مش في القايمة دي بتتلوّن أحمر.
+      var SEEN_VISITS_KEY = "osoDashSeenVisits";
+      var seenVisitsCache = null;
+      function visitSeenKey(v){
+        if(!v) return "";
+        if(v.id) return "id:" + v.id;
+        return "k:" + [v.ts || "", v.day || "", v.time || "", trimName(v.rep || ""), normName(v.name || ""), normPhone(v.phone || "")].join("|");
+      }
+      function seenVisitsSet(){
+        if(seenVisitsCache) return seenVisitsCache;
+        var map = {};
+        try{
+          var raw = window.localStorage.getItem(SEEN_VISITS_KEY);
+          if(raw){
+            var arr = JSON.parse(raw);
+            if(arr && arr.length !== undefined) for(var i = 0; i < arr.length; i++) map[String(arr[i])] = true;
+          }
+        }catch(e){}
+        seenVisitsCache = map;
+        return seenVisitsCache;
+      }
+      function isVisitSeen(v){
+        var k = visitSeenKey(v);
+        return !!k && !!seenVisitsSet()[k];
+      }
+      function markVisitSeen(v){
+        var k = visitSeenKey(v);
+        if(!k) return;
+        var map = seenVisitsSet();
+        if(map[k]) return;
+        map[k] = true;
+        try{ window.localStorage.setItem(SEEN_VISITS_KEY, JSON.stringify(Object.keys(map))); }catch(e){}
+      }
+      function unseenClass(v){ return isVisitSeen(v) ? "" : " visit-unseen"; }
+
       /* ================= تحميل البيانات ================= */
       function loadAll(silent){
         if(state.loading) return Promise.resolve();
@@ -761,26 +897,75 @@
         if(!parts.length) return '<span style="color:var(--muted)">—</span>';
         return parts.map(function(p){ return '<span class="test-chip">' + esc(p) + '</span>'; }).join("");
       }
+      function mapUrlFor(loc){
+        var s = String(loc || "").trim();
+        if(!s) return null;
+        if(/^https?:\/\//i.test(s)) return s;
+        var m = s.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+        if(m) return "https://www.google.com/maps?q=" + m[1] + "," + m[2];
+        return null;
+      }
       function locHtml(loc){
         var s = String(loc || "").trim();
         if(!s) return '<span style="color:var(--muted)">—</span>';
-        var url = null;
-        if(/^https?:\/\//i.test(s)) url = s;
-        else {
-          var m = s.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
-          if(m) url = "https://www.google.com/maps?q=" + m[1] + "," + m[2];
-        }
+        var url = mapUrlFor(s);
         if(url) return '<a class="loc-link" href="' + esc(url) + '" target="_blank" rel="noopener">الخريطة</a>';
         return esc(s);
       }
+      function detailRow(label, valueHtml){
+        return '<div class="detail-row"><span class="d-label">' + esc(label) + '</span><span class="d-value">' + valueHtml + "</span></div>";
+      }
+      function openVisitDetails(idx){
+        var v = null;
+        state.visits.forEach(function(x){ if(x._idx === idx) v = x; });
+        if(!v) return;
+        var lineArea = [];
+        if(v.line) lineArea.push(v.line);
+        if(v.area) lineArea.push(v.area);
+        var dateTime = fmtDay(v.day) + (v.time ? " — " + v.time : "");
+        var mapUrl = mapUrlFor(v.location);
+        var locSection = mapUrl
+          ? '<a class="btn btn-brown map-btn" href="' + esc(mapUrl) + '" target="_blank" rel="noopener">فتح الموقع على الخريطة</a>'
+          : '<div class="loc-missing">الموقع غير مسجل</div>';
+        var testsParts = String(v.tests || "").split(/[,،]/).map(function(x){ return x.trim(); }).filter(Boolean);
+        // قيمة الطلب بتظهر بس لو الزيارة فيها قيمة أصلًا (زيارات قديمة) — القيمة الفاضية السطر بيختفي خالص
+        var hasAmount = v.amount !== null && v.amount !== undefined && v.amount !== "" && !isNaN(Number(v.amount));
+        var amountHtml = hasAmount
+          ? '<div class="amount-box"><div class="a-label">قيمة الأوردر</div><div class="a-value">' + fmtMoney(v.amount) + "</div></div>"
+          : "";
+        $("visitModalBody").innerHTML =
+          '<p class="visit-modal-shop">' + esc(v.name || "—") + badgeHtml(v) + "</p>" +
+          detailRow("التاريخ والوقت", esc(dateTime)) +
+          detailRow("المندوب", esc(trimName(v.rep) || "—")) +
+          detailRow("الخط والمنطقة", esc(lineArea.join(" — ") || "—")) +
+          (v.vehicle ? detailRow("العربية", esc(v.vehicle)) : "") +
+          detailRow("اسم المحل", esc(v.name || "—")) +
+          detailRow("التليفون", v.phone ? '<span dir="ltr">' + esc(v.phone) + "</span>" : "—") +
+          detailRow("نوع العميل", esc(v.type || "—")) +
+          detailRow("الفئة", esc(v.cls || "—")) +
+          detailRow("رقم الزيارة", esc(v.visitNo || "—")) +
+          detailRow("نتيجة الزيارة", esc(v.result || "—")) +
+          detailRow("أنواع التيست", testsParts.length ? testsHtml(v.tests) : "—") +
+          amountHtml +
+          detailRow("الملاحظات", esc(v.notes || "—")) +
+          '<div style="margin-top:10px"><span class="d-label" style="color:var(--muted);font-weight:800;font-size:14.5px">الموقع</span>' + locSection + "</div>";
+        // فتح التفاصيل = الزيارة اتشافت: احفظ معرّفها وشيل اللون الأحمر فورًا بإعادة العرض
+        markVisitSeen(v);
+        if(typeof renderAll === "function") renderAll();
+        $("visitOverlay").classList.remove("hidden");
+      }
+      function closeVisitDetails(){
+        $("visitOverlay").classList.add("hidden");
+      }
       function visitRowHtml(v, showDate){
         var typeCls = v.type + (v.cls ? " — " + v.cls : "");
-        return "<tr>" +
+        return "<tr class='visit-clickable" + unseenClass(v) + "' data-visit-idx='" + v._idx + "' tabindex='0' role='button' title='اضغط لعرض تفاصيل الزيارة' aria-label='تفاصيل الزيارة'>" +
           "<td data-label='الوقت'>" + esc(showDate ? (fmtDay(v.day) + (v.time ? " " + v.time : "")) : (v.time || "—")) + "</td>" +
           "<td data-label='المندوب'>" + esc(trimName(v.rep) || "—") + "</td>" +
           "<td class='cell-shop'><div class='shop-name'>" + esc(v.name || "—") + badgeHtml(v) + "</div>" +
             (v.phone ? "<div class='shop-sub'>" + esc(v.phone) + "</div>" : "") +
-            (v.notes ? "<div class='notes-line'>" + esc(v.notes) + "</div>" : "") + "</td>" +
+            (v.notes ? "<div class='notes-line'>" + esc(v.notes) + "</div>" : "") +
+            "<span class='details-hint'>التفاصيل</span></td>" +
           "<td data-label='النوع'>" + esc(typeCls || "—") + "</td>" +
           "<td data-label='رقم الزيارة'>" + esc(v.visitNo || "—") + "</td>" +
           "<td data-label='النتيجة'>" + esc(v.result || "—") + "</td>" +
@@ -868,7 +1053,7 @@
         else badge.classList.add("hidden");
 
         $("alertsOldToday").innerHTML = oldToday.length ? oldToday.map(function(v){
-          return '<div class="alert-row"><div class="main">' +
+          return '<div class="alert-row visit-clickable' + unseenClass(v) + '" data-visit-idx="' + v._idx + '" tabindex="0" role="button" title="اضغط لعرض تفاصيل الزيارة"><div class="main">' +
             '<span class="shop-name">' + esc(v.name || "—") + "</span>" + badgeHtml(v) +
             '<div class="meta">المندوب: <b>' + esc(trimName(v.rep) || "—") + "</b> · الساعة " + esc(v.time || "—") +
             (v.phone ? " · " + esc(v.phone) : "") + "</div>" +
@@ -876,15 +1061,17 @@
               ? '<div class="meta">عميل قديم من قبل الشيت — رقم الزيارة المسجل: <b>' + esc(v.visitNo || "—") + "</b></div>"
               : '<div class="meta">اتزار قبل كده <b>' + fmtNum(v.prevCount) + "</b> مرة" +
                 (v.prevLast ? " — آخر زيارة سابقة: <b>" + fmtDay(v.prevLast.day) + "</b>" : "") + "</div>") +
+            '<span class="details-hint">التفاصيل</span>' +
             "</div></div>";
         }).join("") : '<div class="empty-box">مفيش عملاء قدام اتزاروا النهاردة.</div>';
 
         $("alertsNewToday").innerHTML = newToday.length ? newToday.map(function(v){
-          return '<div class="alert-row"><div class="main">' +
+          return '<div class="alert-row visit-clickable' + unseenClass(v) + '" data-visit-idx="' + v._idx + '" tabindex="0" role="button" title="اضغط لعرض تفاصيل الزيارة"><div class="main">' +
             '<span class="shop-name">' + esc(v.name || "—") + "</span>" + badgeHtml(v) +
             '<div class="meta">المندوب: <b>' + esc(trimName(v.rep) || "—") + "</b> · الساعة " + esc(v.time || "—") +
             (v.phone ? " · " + esc(v.phone) : "") +
             (v.type ? " · " + esc(v.type) : "") + "</div>" +
+            '<span class="details-hint">التفاصيل</span>' +
             "</div></div>";
         }).join("") : '<div class="empty-box">مفيش عملاء جداد النهاردة.</div>';
 
@@ -893,25 +1080,27 @@
         $("alertsAllOld").innerHTML = oldShops.length ? oldShops.map(function(s){
           var repsSet = {};
           s.visits.forEach(function(v){ var rn = trimName(v.rep); if(rn) repsSet[rn] = true; });
-          return '<div class="alert-row"><div class="main">' +
+          return '<div class="alert-row visit-clickable' + unseenClass(s.last) + '" data-visit-idx="' + s.last._idx + '" tabindex="0" role="button" title="اضغط لعرض تفاصيل آخر زيارة"><div class="main">' +
             '<span class="shop-name">' + esc(s.name || "—") + "</span>" +
             '<span class="badge badge-old">عميل قديم</span>' +
             '<div class="meta">عدد الزيارات: <b>' + fmtNum(s.visits.length) + "</b>" +
             (s.phone ? " · " + esc(s.phone) : "") + "</div>" +
             '<div class="meta">أول زيارة: <b>' + fmtDay(s.first.day) + "</b> · آخر زيارة: <b>" + fmtDay(s.last.day) + "</b></div>" +
             '<div class="meta">المناديب: <b>' + esc(Object.keys(repsSet).join("، ") || "—") + "</b></div>" +
+            '<span class="details-hint">تفاصيل آخر زيارة</span>' +
             "</div></div>";
         }).join("") : '<div class="empty-box">مفيش عملاء قدام لسه — كل المحلات اتزارت مرة واحدة.</div>';
 
         var newest = state.shops.slice().sort(function(a,b){ return b.first.ts - a.first.ts; }).slice(0, 20);
         $("alertsNewest").innerHTML = newest.length ? newest.map(function(s){
-          return '<div class="alert-row"><div class="main">' +
+          return '<div class="alert-row visit-clickable' + unseenClass(s.first) + '" data-visit-idx="' + s.first._idx + '" tabindex="0" role="button" title="اضغط لعرض تفاصيل الزيارة"><div class="main">' +
             '<span class="shop-name">' + esc(s.name || "—") + "</span>" +
             (s.visits.length > 1
               ? '<span class="badge badge-old">بقى قديم — ' + fmtNum(s.visits.length) + ' زيارات</span>'
               : (s.first.isNew ? '<span class="badge badge-new">عميل جديد</span>' : '<span class="badge badge-old">عميل قديم (قبل الشيت)</span>')) +
             '<div class="meta">أول زيارة: <b>' + fmtDay(s.first.day) + "</b> · المندوب: <b>" + esc(trimName(s.first.rep) || "—") + "</b>" +
             (s.phone ? " · " + esc(s.phone) : "") + "</div>" +
+            '<span class="details-hint">التفاصيل</span>' +
             "</div></div>";
         }).join("") : '<div class="empty-box">مفيش زيارات مسجلة لسه.</div>';
       }
@@ -1040,13 +1229,28 @@
         { key: "result",  title: "نتائج الزيارة" },
         { key: "test",    title: "التيستات" }
       ];
+      // حقل قيمة الطلب مفعّل بس لو فيه عنصر إعدادات set_amount / setting / orderAmount
+      // في formLists — غياب العنصر معناه مقفول (الحالة الافتراضية)
+      function isOrderAmountEnabled(){
+        if(!state.lists || !state.lists.items) return false;
+        return state.lists.items.some(function(i){
+          return i.id === "set_amount" && i.section === "setting" && i.name === "orderAmount";
+        });
+      }
+      function renderOrderAmountToggle(){
+        var tgl = $("orderAmountToggle");
+        if(tgl) tgl.checked = isOrderAmountEnabled();
+      }
       function renderLists(){
+        renderOrderAmountToggle();
         var wrap = $("listsWrap");
         if(!state.lists || !state.lists.items){
           wrap.innerHTML = '<div class="empty-box">القوائم لسه محمّلتش.</div>';
           return;
         }
-        var items = state.lists.items;
+        // عناصر الإعدادات (section = setting) مش عناصر قوائم عادية:
+        // ما تظهرش في محرر القوائم خالص ومكانها مفتاح التفعيل اللي فوق بس
+        var items = state.lists.items.filter(function(i){ return i.section !== "setting"; });
         var typeNames = (state.lists.types || []).map(function(t){ return t.name; });
 
         wrap.innerHTML = LIST_SECTIONS.map(function(sec){
@@ -1089,6 +1293,31 @@
       $("modalYes").addEventListener("click", function(){
         $("modalOverlay").classList.add("hidden");
         if(modalCb){ var cb = modalCb; modalCb = null; cb(); }
+      });
+
+      /* ================= تفاصيل الزيارة: فتح وإغلاق ================= */
+      $("visitModalX").addEventListener("click", closeVisitDetails);
+      $("visitModalClose").addEventListener("click", closeVisitDetails);
+      $("visitOverlay").addEventListener("click", function(e){
+        if(e.target === $("visitOverlay")) closeVisitDetails();
+      });
+      document.addEventListener("keydown", function(e){
+        if(e.key === "Escape" && !$("visitOverlay").classList.contains("hidden")) closeVisitDetails();
+      });
+      // أي صف/كارت زيارة في أي تبويب (يومي، كل الزيارات، زيارات مندوب من الملخص، تنبيهات)
+      document.addEventListener("click", function(e){
+        var el = e.target.closest ? e.target.closest("[data-visit-idx]") : null;
+        if(!el) return;
+        // دوسة على رابط الخريطة أو أي زر جوه الصف متفتحش التفاصيل
+        if(e.target.closest("a, button")) return;
+        openVisitDetails(Number(el.getAttribute("data-visit-idx")));
+      });
+      document.addEventListener("keydown", function(e){
+        if(e.key !== "Enter" && e.key !== " ") return;
+        var el = e.target && e.target.closest ? e.target.closest("[data-visit-idx]") : null;
+        if(!el || e.target.closest("a, button, input, select, textarea")) return;
+        e.preventDefault();
+        openVisitDetails(Number(el.getAttribute("data-visit-idx")));
       });
 
       /* ================= التهيئة والأحداث ================= */
@@ -1226,6 +1455,27 @@
           var btn = document.querySelector('[data-add-section="' + sec + '"]');
           if(btn) btn.click();
         }
+      });
+
+      // مفتاح حقل قيمة الطلب: التفعيل بيضيف عنصر الإعدادات set_amount،
+      // والإلغاء بيحذفه — وبعد أي تغيير القوائم بتتحمّل من جديد وحالة المفتاح بتتحدث منها
+      $("orderAmountToggle").addEventListener("change", function(e){
+        var tgl = e.target;
+        var enable = tgl.checked;
+        tgl.disabled = true;
+        var req = enable
+          ? apiPost({ action: "upsertFormItem", code: state.code, item: { id: "set_amount", section: "setting", name: "orderAmount", parent: "", sort: 1, visible: true } })
+          : apiPost({ action: "deleteFormItem", code: state.code, id: "set_amount" });
+        req.then(function(res){
+          if(!res || !res.ok) throw new Error("");
+          toast(enable ? "اتفعّل حقل قيمة الطلب في نموذج الزيارة." : "اتقفل حقل قيمة الطلب من نموذج الزيارة.");
+          return reloadLists();
+        }).catch(function(){
+          toast("التغيير منفعش. اتأكد من الاتصال وحاول تاني.");
+        }).then(function(){
+          tgl.disabled = false;
+          renderOrderAmountToggle();
+        });
       });
 
       $("refreshBtn").addEventListener("click", function(){ loadAll(false); });
