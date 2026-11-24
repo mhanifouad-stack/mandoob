@@ -113,6 +113,11 @@
       .row2{ display:flex; gap:10px; }
       .row2 .field{ flex:1; }
       .hidden{ display:none !important; }
+      .suggest{ position:absolute; top:100%; right:0; left:0; margin-top:4px; background:#fff; border:1.5px solid var(--chip-border); border-radius:12px; box-shadow:0 10px 24px rgba(84,56,37,.18); z-index:40; overflow:hidden; }
+      .suggest button{ display:block; width:100%; text-align:right; background:none; border:none; border-bottom:1px solid #f0e8d8; padding:10px 12px; font:inherit; font-weight:700; color:var(--ink); cursor:pointer; }
+      .suggest button:last-child{ border-bottom:none; }
+      .suggest button .sp{ display:block; font-size:12px; font-weight:600; color:var(--muted); margin-top:2px; }
+      .cust-note{ margin-top:10px; background:#e9f6ec; color:#256b33; border:1.5px solid #bfe6c8; border-radius:10px; padding:8px 12px; font-weight:700; font-size:13.5px; }
 
       /* ---------- تعديل القوائم ---------- */
       .admin-box{
@@ -237,9 +242,10 @@
               <div class="chips" id="visitNoChips"></div>
             </div>
 
-            <div class="field">
+            <div class="field" style="position:relative">
               <label for="shopName">اسم العميل / المحل</label>
               <input id="shopName" class="text-input" type="text" autocomplete="off" placeholder="مثال: كافيه النيل" />
+              <div id="nameSuggest" class="suggest hidden"></div>
             </div>
 
             <div class="row2">
@@ -252,6 +258,8 @@
                 <input id="amount" class="text-input" type="number" inputmode="decimal" min="0" autocomplete="off" />
               </div>
             </div>
+
+            <div id="custNote" class="cust-note hidden">✓ العميل مسجل — تم ملء بياناته من زياراته السابقة</div>
 
             <div class="group">
               <div class="group-label">نتيجة الزيارة</div>
@@ -384,6 +392,7 @@
         $("userMeta").textContent = meta.join(" • ");
         $("adminLists").classList.toggle("hidden", u.role !== "admin");
         loadFormLists();
+        loadCustomerIndex();
       }
 
       function doLogout(){
@@ -546,6 +555,7 @@
             showMsg(msg, res.duplicate ? "الزيارة دي محفوظة من قبل" : "تم حفظ الزيارة بنجاح ✓", true);
             resetForm();
             state.visitsLoaded = false;
+            loadCustomerIndex();
           } else {
             showMsg(msg, "لم يتم الحفظ" + (res && res.error ? " (" + res.error + ")" : "") + " — حاول تاني");
           }
@@ -558,6 +568,8 @@
       function resetForm(){
         state.sel = { type:"", cls:"", visitNo:"", result:"", tests:[] };
         state.location = "";
+        $("custNote").classList.add("hidden");
+        hideSuggest();
         $("shopName").value = ""; $("phone").value = "";
         $("amount").value = ""; $("notes").value = "";
         var btn = $("locBtn");
@@ -866,6 +878,74 @@
           body.appendChild(card);
         });
       }
+
+      /* ================= التعرف على العميل المسجل ================= */
+      function normPhone(p){
+        var d = String(p || "").replace(/\D/g, "");
+        return d.length > 9 ? d.slice(-9) : d;
+      }
+
+      function buildCustomers(visits){
+        var byPhone = {}, list = [], seenName = {};
+        (visits || []).forEach(function(v){
+          if(!v.name) return;
+          var c = { name: v.name, phone: v.phone || "", type: v.type || "", cls: v.cls || "" };
+          var np = normPhone(v.phone);
+          if(np){
+            if(byPhone[np]){ var old = byPhone[np]; old.name = c.name; old.phone = c.phone; old.type = c.type; old.cls = c.cls; }
+            else { byPhone[np] = c; list.push(c); }
+          } else if(!seenName[c.name]){ seenName[c.name] = 1; list.push(c); }
+        });
+        state.customers = list;
+        state.custByPhone = byPhone;
+      }
+
+      function loadCustomerIndex(){
+        apiGet({ action:"visits2", code: state.code }).then(function(res){
+          if(res && res.ok) buildCustomers(res.visits || []);
+        }).catch(function(){});
+      }
+
+      function hideSuggest(){
+        var b = $("nameSuggest");
+        b.classList.add("hidden"); b.innerHTML = "";
+      }
+
+      function applyCustomer(c, fromPhone){
+        if(!c) return;
+        $("shopName").value = c.name || "";
+        if(!fromPhone && c.phone) $("phone").value = c.phone;
+        if(c.type){ state.sel.type = c.type; state.sel.cls = c.cls || ""; renderFormLists(); }
+        $("custNote").classList.remove("hidden");
+        hideSuggest();
+      }
+
+      $("phone").addEventListener("input", function(){
+        $("custNote").classList.add("hidden");
+        var np = normPhone($("phone").value);
+        if(np.length >= 9 && state.custByPhone && state.custByPhone[np]){
+          applyCustomer(state.custByPhone[np], true);
+        }
+      });
+
+      $("shopName").addEventListener("input", function(){
+        $("custNote").classList.add("hidden");
+        var q = $("shopName").value.trim();
+        var box = $("nameSuggest");
+        if(!q || !state.customers){ hideSuggest(); return; }
+        var matches = state.customers.filter(function(c){ return c.name && c.name.indexOf(q) !== -1; }).slice(0, 8);
+        if(!matches.length){ hideSuggest(); return; }
+        box.innerHTML = "";
+        matches.forEach(function(c){
+          var b = document.createElement("button");
+          b.type = "button";
+          b.innerHTML = esc(c.name) + (c.phone ? '<span class="sp">' + esc(c.phone) + (c.type ? " • " + esc(c.type) : "") + "</span>" : "");
+          b.addEventListener("click", function(){ applyCustomer(c, false); });
+          box.appendChild(b);
+        });
+        box.classList.remove("hidden");
+      });
+      $("shopName").addEventListener("blur", function(){ setTimeout(hideSuggest, 200); });
 
       $("visitsRefresh").addEventListener("click", function(){ state.visitsLoaded = false; loadVisits(); });
 
