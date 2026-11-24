@@ -247,7 +247,7 @@
                 <label for="phone">التليفون <span class="opt" style="color:var(--muted);font-weight:600;font-size:12.5px">(اختياري)</span></label>
                 <input id="phone" class="text-input" type="tel" inputmode="tel" autocomplete="off" />
               </div>
-              <div class="field">
+              <div class="field hidden" id="amountField">
                 <label for="amount">قيمة الطلب (جنيه)</label>
                 <input id="amount" class="text-input" type="number" inputmode="decimal" min="0" autocomplete="off" />
               </div>
@@ -423,6 +423,9 @@
       function renderFormLists(){
         var L = state.lists;
         if(!L) return;
+        // مفتاح تفعيل حقل قيمة الطلب: بيتحكم فيه الأدمن من لوحة التحكم (عنصر setting/orderAmount في القوائم)
+        state.amountOn = (L.items || []).some(function(i){ return i.section === "setting" && i.name === "orderAmount"; });
+        $("amountField").classList.toggle("hidden", !state.amountOn);
         // نوع العميل
         var tc = $("typeChips"); tc.innerHTML = "";
         (L.types || []).forEach(function(t){
@@ -531,7 +534,7 @@
           visitNo: state.sel.visitNo,
           result: state.sel.result,
           tests: state.sel.tests.join("، "),
-          amount: amountRaw === "" ? null : Number(amountRaw),
+          amount: (state.amountOn && amountRaw !== "") ? Number(amountRaw) : null,
           notes: $("notes").value.trim(),
           location: state.location
         };
@@ -852,7 +855,7 @@
           if(state.user.role === "admin" && v.rep) lines += "<div><b>المندوب:</b> " + esc(v.rep) + "</div>";
           if(v.date) lines += "<div><b>التاريخ:</b> " + esc(fmtDate(v.date)) + "</div>";
           if(v.phone) lines += "<div><b>التليفون:</b> " + esc(v.phone) + "</div>";
-          if(v.amount !== null && v.amount !== undefined && v.amount !== "") lines += "<div><b>قيمة الطلب:</b> " + esc(v.amount) + " جنيه</div>";
+          if(state.amountOn && v.amount !== null && v.amount !== undefined && v.amount !== "") lines += "<div><b>قيمة الطلب:</b> " + esc(v.amount) + " جنيه</div>";
           if(v.tests) lines += "<div><b>التيستات:</b> " + esc(v.tests) + "</div>";
           if(v.notes) lines += "<div><b>ملاحظات:</b> " + esc(v.notes) + "</div>";
           if(v.location) lines += '<div><a class="loc-link" href="' + esc(v.location) + '" target="_blank" rel="noopener">📍 الموقع</a></div>';
