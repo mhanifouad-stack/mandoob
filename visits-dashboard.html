@@ -188,6 +188,10 @@
       .visit-unseen .shop-name{ color:var(--danger) !important; font-weight:900; }
       .alert-row.visit-unseen{ background:var(--danger-bg); }
       .alert-row.visit-unseen:hover{ border-color:#eec5bb; }
+      /* تمييز مؤقت لصف الزيارة بعد التنقّل إليه في «كل الزيارات»: إطار واضح ووميض */
+      table.visits tr.visit-highlight{ outline:3px solid var(--brown); outline-offset:-3px; }
+      table.visits tr.visit-highlight td{ animation:visitFlashBg 1.8s ease; }
+      @keyframes visitFlashBg{ 0%,100%{ background:#fffaf0; } 25%,60%{ background:#f2cf8b; } }
       .empty-box{
         background:var(--card); border-radius:var(--radius); box-shadow:0 2px 14px rgba(111,78,55,.10);
         padding:28px 16px; text-align:center; color:var(--muted); font-weight:700; font-size:15px;
@@ -957,6 +961,78 @@
       function closeVisitDetails(){
         $("visitOverlay").classList.add("hidden");
       }
+
+      /* ================= التنقّل لزيارة في «كل الزيارات» ================= */
+      // هل الزيارة دي ظاهرة تحت فلاتر «كل الزيارات» الحالية؟ (نفس شروط renderAllVisits)
+      function visitMatchesAllFilters(v){
+        var rep = $("fRep").value;
+        var from = $("fFrom").value;
+        var to = $("fTo").value;
+        var type = $("fType").value;
+        var result = $("fResult").value;
+        var kind = $("fKind").value;
+        var q = normName($("fSearch").value);
+        var qPhone = normPhone($("fSearch").value);
+        if(rep && trimName(v.rep) !== rep) return false;
+        if(from && v.day < from) return false;
+        if(to && v.day > to) return false;
+        if(type && v.type !== type) return false;
+        if(result && v.result !== result) return false;
+        if(kind === "new" && !v.isNew) return false;
+        if(kind === "old" && v.isNew) return false;
+        if(q){
+          var inName = normName(v.name).indexOf(q) !== -1;
+          var inPhone = qPhone && normPhone(v.phone).indexOf(qPhone) !== -1;
+          if(!inName && !inPhone) return false;
+        }
+        return true;
+      }
+      // تصفية فلاتر «كل الزيارات» لوضعها الافتراضي اللي بيبيّن كل الزيارات
+      function resetAllFiltersToDefault(){
+        ["fRep","fType","fResult","fKind"].forEach(function(id){ $(id).value = ""; });
+        $("fFrom").value = "";
+        $("fTo").value = "";
+        $("fSearch").value = "";
+      }
+      var visitHighlightTimer = null;
+      function highlightVisitRow(idx){
+        var row = $("allTable").querySelector("[data-visit-idx='" + idx + "']");
+        if(!row) return null;
+        row.classList.add("visit-highlight");
+        if(visitHighlightTimer) clearTimeout(visitHighlightTimer);
+        visitHighlightTimer = setTimeout(function(){ row.classList.remove("visit-highlight"); }, 2600);
+        return row;
+      }
+      // دالة التنقّل الواحدة: تفعيل «كل الزيارات» ← تصفية الفلاتر لو الزيارة مخفية ←
+      // scroll وتمييز الصف حوالي ثانيتين ← فتح تفاصيل الزيارة عادي
+      function goToVisitInAll(idx){
+        var v = null;
+        state.visits.forEach(function(x){ if(x._idx === idx) v = x; });
+        if(!v){ openVisitDetails(idx); return; }
+        switchTab("all");
+        if(!visitMatchesAllFilters(v)) resetAllFiltersToDefault();
+        renderAllVisits();
+        var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var row = highlightVisitRow(idx);
+        if(!row){ openVisitDetails(idx); return; }
+        row.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        setTimeout(function(){
+          openVisitDetails(idx);
+          // فتح التفاصيل بيعيد رسم الجدول (إزالة الأحمر) — نرجّع التمييز ومكان الصف بعده
+          var row2 = highlightVisitRow(idx);
+          if(row2) row2.scrollIntoView({ block: "center" });
+        }, 1800);
+      }
+      // الدوس على زيارة برّه «كل الزيارات» (اليومية/التنبيهات — وزيارات المندوب
+      // اللي بتتفتح من الملخص بتوصل هنا وهي في اليومية) بينقّل لمكانها في «كل الزيارات»،
+      // والدوس جوّه «كل الزيارات» نفسها بيفتح التفاصيل مباشرة زي ما هو
+      function activateVisit(el){
+        var idx = Number(el.getAttribute("data-visit-idx"));
+        var page = el.closest ? el.closest(".tab-page") : null;
+        var pid = page ? page.id : "";
+        if(pid === "tab-daily" || pid === "tab-alerts") goToVisitInAll(idx);
+        else openVisitDetails(idx);
+      }
       function visitRowHtml(v, showDate){
         var typeCls = v.type + (v.cls ? " — " + v.cls : "");
         return "<tr class='visit-clickable" + unseenClass(v) + "' data-visit-idx='" + v._idx + "' tabindex='0' role='button' title='اضغط لعرض تفاصيل الزيارة' aria-label='تفاصيل الزيارة'>" +
@@ -1310,14 +1386,14 @@
         if(!el) return;
         // دوسة على رابط الخريطة أو أي زر جوه الصف متفتحش التفاصيل
         if(e.target.closest("a, button")) return;
-        openVisitDetails(Number(el.getAttribute("data-visit-idx")));
+        activateVisit(el);
       });
       document.addEventListener("keydown", function(e){
         if(e.key !== "Enter" && e.key !== " ") return;
         var el = e.target && e.target.closest ? e.target.closest("[data-visit-idx]") : null;
         if(!el || e.target.closest("a, button, input, select, textarea")) return;
         e.preventDefault();
-        openVisitDetails(Number(el.getAttribute("data-visit-idx")));
+        activateVisit(el);
       });
 
       /* ================= التهيئة والأحداث ================= */
