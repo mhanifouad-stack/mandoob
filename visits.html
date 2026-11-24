@@ -175,9 +175,17 @@
         border-radius:12px; font-weight:800; font-size:15px; min-height:48px; padding:10px 16px;
       }
       .spinner{ text-align:center; color:var(--muted); font-weight:700; padding:18px 0; font-size:14.5px; }
-    </style>
+    
+    /* OSO splash */
+    #splash{position:fixed;inset:0;background:#f5efe1;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .45s ease}
+    #splash img{width:min(64vw,300px);height:auto;animation:splashIn .65s ease-out,splashWiggle 1.15s ease-in-out .65s}
+    @keyframes splashIn{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+    @keyframes splashWiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(4deg)}75%{transform:rotate(-4deg)}}
+    #splash.hide{opacity:0;pointer-events:none}
+  </style>
   </head>
   <body>
+  <div id="splash"><img src="oso-icon-512.png" alt="OSO"></div>
     <div class="wrap">
 
       <!-- ======== شاشة الدخول ======== -->
@@ -882,5 +890,8 @@
         }
       })();
     </script>
-  </body>
+    <script>
+    (function(){var sp=document.getElementById('splash');if(!sp)return;var done=false;function hide(){if(done)return;done=true;sp.classList.add('hide');setTimeout(function(){sp.remove();},500);}sp.addEventListener('click',hide);setTimeout(hide,3000);})();
+  </script>
+</body>
 </html>
