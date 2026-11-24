@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light" />
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="oso-icon-192.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#6f4e37" />
+    <link rel="apple-touch-icon" href="oso-icon-192.png" />
     <title>لوحة تحكم الزيارات مصنع OSO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -604,6 +607,98 @@
 
         state.visits = arr;
         state.shops = shops;
+        updateNotifBadge();
+      }
+
+      /* ================= عدّاد الإشعارات الجديدة ================= */
+      // التنبيهات الجديدة = زيارات وقتها بعد آخر مرة الأدمن فتح فيها تبويب
+      // «التنبيهات». وقت آخر مشاهدة بيتحفظ في localStorage بمفتاح osoDashLastSeen،
+      // وأول تشغيل خالص بنعتبر الكل مقروء ونبدأ من دلوقتي.
+      var BASE_TITLE = "لوحة تحكم الزيارات مصنع OSO";
+      var LAST_SEEN_KEY = "osoDashLastSeen";
+      var notifCount = 0;
+      var faviconImg = null;
+      var faviconReady = false;
+
+      function getLastSeen(){
+        try{
+          var v = window.localStorage.getItem(LAST_SEEN_KEY);
+          if(v === null){
+            var now = Date.now();
+            window.localStorage.setItem(LAST_SEEN_KEY, String(now));
+            return now;
+          }
+          var n = Number(v);
+          return isNaN(n) ? 0 : n;
+        }catch(e){ return Date.now(); }
+      }
+      function setLastSeenNow(){
+        try{ window.localStorage.setItem(LAST_SEEN_KEY, String(Date.now())); }catch(e){}
+      }
+      function drawFaviconBadge(){
+        try{
+          var size = 64;
+          var c = document.createElement("canvas");
+          c.width = size; c.height = size;
+          var ctx = c.getContext("2d");
+          if(!ctx) return;
+          if(faviconReady && faviconImg){
+            ctx.drawImage(faviconImg, 0, 0, size, size);
+          } else {
+            ctx.fillStyle = "#6f4e37";
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          if(notifCount > 0){
+            var label = notifCount > 99 ? "99+" : String(notifCount);
+            var r = label.length > 1 ? 21 : 17;
+            var cx = size - r, cy = r;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fillStyle = "#d42a1e";
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#ffffff";
+            ctx.stroke();
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold " + (label.length > 1 ? 19 : 25) + "px Arial, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(label, cx, cy + 1);
+          }
+          var link = document.querySelector("link[rel~='icon']");
+          if(!link){
+            link = document.createElement("link");
+            link.rel = "icon";
+            document.getElementsByTagName("head")[0].appendChild(link);
+          }
+          link.type = "image/png";
+          link.href = c.toDataURL("image/png");
+        }catch(e){}
+      }
+      function ensureFaviconImg(){
+        if(faviconImg) return;
+        faviconImg = new Image();
+        faviconImg.onload = function(){ faviconReady = true; drawFaviconBadge(); };
+        faviconImg.src = "oso-icon-192.png";
+      }
+      function updateNotifBadge(){
+        var lastSeen = getLastSeen();
+        notifCount = state.visits.filter(function(v){ return v.ts > lastSeen; }).length;
+        document.title = notifCount > 0 ? "(" + notifCount + ") " + BASE_TITLE : BASE_TITLE;
+        ensureFaviconImg();
+        drawFaviconBadge();
+        try{
+          if(navigator.setAppBadge){
+            if(notifCount > 0) navigator.setAppBadge(notifCount);
+            else if(navigator.clearAppBadge) navigator.clearAppBadge();
+          }
+        }catch(e){}
+      }
+      function markAlertsSeen(){
+        setLastSeenNow();
+        updateNotifBadge();
       }
 
       /* ================= تحميل البيانات ================= */
@@ -1003,6 +1098,8 @@
         ["daily","alerts","all","reps","lists"].forEach(function(t){
           $("tab-" + t).classList.toggle("hidden", t !== name);
         });
+        // فتح تبويب التنبيهات = الأدمن شافها: صفّر عدّاد الإشعارات الجديدة
+        if(name === "alerts") markAlertsSeen();
       }
       $("tabs").addEventListener("click", function(e){
         var btn = e.target.closest(".tab-btn");
@@ -1163,6 +1260,12 @@
           showMsg($("loginMsg"), "مش قادر أوصل للخادم. اتأكد من الاتصال وحاول تاني.", "err");
         }).then(function(){ $("loginBtn").disabled = false; });
       });
+
+      // تحديث تلقائي كل ٣ دقايق طول ما اللوحة مفتوحة ومسجّل الدخول،
+      // وعدّاد الإشعارات بيتحسب من جديد مع كل تحديث
+      setInterval(function(){
+        if(state.user && !document.hidden) loadAll(true);
+      }, 3 * 60 * 1000);
     </script>
   </body>
 </html>
