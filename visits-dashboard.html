@@ -1275,7 +1275,7 @@
         if(state.user && !document.hidden) loadAll(true);
       }, 3 * 60 * 1000);
 
-      // شاشة البداية: بتختفي لوحدها بعد ٣ ثواني، والدوس عليها يخفيها فورًا
+      // شاشة البداية: بتختفي لوحدها بعد ٥ ثواني، والدوس عليها يخفيها فورًا
       (function(){
         var splash = document.getElementById("splash");
         if(!splash) return;
@@ -1286,7 +1286,7 @@
           splash.classList.add("hide");
           setTimeout(function(){ splash.remove(); }, 500);
         }
-        setTimeout(hideSplash, 3000);
+        setTimeout(hideSplash, 5000);
         splash.addEventListener("click", hideSplash);
       })();
     </script>
